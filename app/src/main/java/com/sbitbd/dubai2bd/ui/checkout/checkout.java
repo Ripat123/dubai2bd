@@ -69,7 +69,7 @@ public class checkout extends AppCompatActivity implements AdapterView.OnItemCli
     private View dialog_view;
     private View signin_view, singup_view;
     private EditText phone_n, trn_n;
-    private String districtid = "", session = "", id = "", thana_id = "", gid = "";
+    private String districtid = "", session = "", id = "", thana_id = "", gid = "",email="";
     private int coupon_check = 0;
     private ProgressDialog progressDialog, progress;
 
@@ -432,7 +432,7 @@ public class checkout extends AppCompatActivity implements AdapterView.OnItemCli
 
                 @Override
                 public void onErrorResponse(VolleyError error) {
-                    Toast.makeText(checkout.this, error.toString(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(checkout.this, error.toString(), Toast.LENGTH_SHORT).show();
                 }
             }) {
                 @Override
@@ -589,7 +589,7 @@ public class checkout extends AppCompatActivity implements AdapterView.OnItemCli
 
             String sql = "INSERT INTO `delivery_infos` (`first_name`,`last_name`,`email`,`address`,`phone`," +
                     "`country`,`district_id`,`session_id`,`created_at`) VALUES ('" + first_nameS + "',''," +
-                    "'','" + fulladdressS + "','" + phoneS + "','BD','" + districtid + "','" + session + "','" + thisDate + "')";
+                    "'"+email+"','" + fulladdressS + "','" + phoneS + "','BD','" + districtid + "','" + session + "','" + thisDate + "')";
 
             deliveryAdd(checkout.this, sql, progressDialog);
         } catch (Exception e) {
@@ -864,7 +864,7 @@ public class checkout extends AppCompatActivity implements AdapterView.OnItemCli
                 JSONObject collegeData = result.getJSONObject(i);
                 first_name.setText(collegeData.getString(config.PRO_NAME));
                 Phone.setText(collegeData.getString(config.PRO_DISCOUNT_PRICE));
-//                Email.setText(collegeData.getString(config.EMAIL));
+                email = collegeData.getString(config.EMAIL);
                 fulladdress.setText(collegeData.getString(config.PRO_CURRENT_PRICE));
             }
         } catch (Exception e) {

@@ -584,7 +584,6 @@ public class operation {
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
-                            progressDialog.dismiss();
                             if (!response.equals("Could not Registered in online") && !response.equals("problem")) {
 
                                 sixdms(context,progressDialog,cuoponID,subT,disT,delT,totalT,response);
@@ -749,7 +748,7 @@ public class operation {
 
                 @Override
                 public void onErrorResponse(VolleyError error) {
-
+                    progressDialog.dismiss();
                     Toast.makeText(context, error.toString(), Toast.LENGTH_SHORT).show();
                 }
             }) {
