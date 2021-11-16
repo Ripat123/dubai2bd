@@ -250,6 +250,7 @@
                         android:layout_width="40dp"
                         android:layout_height="40dp"
                         android:layout_marginStart="20dp"
+                        android:layout_marginTop="8dp"
                         android:src="@drawable/ic_cashless_payment"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -348,8 +349,8 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
-                        android:layout_marginTop="5dp"
-                        android:layout_marginBottom="8dp"
+                        android:layout_marginTop="12dp"
+                        android:layout_marginBottom="14dp"
                         android:autoSizeMaxTextSize="100sp"
                         android:autoSizeMinTextSize="16sp"
                         android:autoSizeStepGranularity="2sp"
