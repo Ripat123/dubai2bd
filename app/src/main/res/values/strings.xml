@@ -145,4 +145,5 @@
     <string name="sign_text">Please Login and enjoy your shopping</string>
     <string name="sign_up_txt">Please Registration and enjoy your shopping</string>
     <string name="buy_earn"><![CDATA[BUY & EARN]]></string>
+    <string name="online_payment">Online Payment</string>
 </resources>

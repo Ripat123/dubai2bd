@@ -47,7 +47,7 @@ public class checkout extends AppCompatActivity implements AdapterView.OnItemCli
     RecyclerView recyclerView;
     checkout_pro_model checkout_pro_model;
     checkout_pro_adapter checkout_pro_adapter;
-    RadioButton cash_rd, bkash_rd, rocket_rd, nagad_rd;
+    RadioButton cash_rd, bkash_rd, rocket_rd, nagad_rd,online_id;
     DoConfig config;
     HomeViewModel homeViewModel = new HomeViewModel();
     operation operation = new operation();
@@ -55,10 +55,10 @@ public class checkout extends AppCompatActivity implements AdapterView.OnItemCli
     private AutoCompleteTextView district, thana;
     private Button submit, promo_btn;
     private EditText first_name, Phone, fulladdress, promo_field;
-    private static List<cat_model> districtList = new ArrayList<>();
-    private static List<cat_model> thanaList = new ArrayList<>();
-    private static List<String> model = new ArrayList<>();
-    private static List<String> thanamodel = new ArrayList<>();
+    private static final List<cat_model> districtList = new ArrayList<>();
+    private static final List<cat_model> thanaList = new ArrayList<>();
+    private static final List<String> model = new ArrayList<>();
+    private static final List<String> thanamodel = new ArrayList<>();
     private static List<String> shipping_id = new ArrayList<>();
     private double del_ch = 0;
     private double gr_t = 0;
@@ -94,6 +94,7 @@ public class checkout extends AppCompatActivity implements AdapterView.OnItemCli
         bkash_rd = findViewById(R.id.bkash_id);
         rocket_rd = findViewById(R.id.rocket_id);
         nagad_rd = findViewById(R.id.nagad_id);
+        online_id = findViewById(R.id.online_id);
         subT = findViewById(R.id.total_id);
         disT = findViewById(R.id.dis_id);
         deliT = findViewById(R.id.delivery_id);
@@ -276,6 +277,14 @@ public class checkout extends AppCompatActivity implements AdapterView.OnItemCli
                 trnID = "";
             }
         });
+        online_id.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                pay_type = "online";
+                mobileNO = "";
+                trnID = "";
+            }
+        });
     }
 
     private void initpro_check() {
@@ -292,7 +301,7 @@ public class checkout extends AppCompatActivity implements AdapterView.OnItemCli
             progressDialog = ProgressDialog.show(checkout.this, "", "", false, false);
             String sql = "SELECT `id`,`discout_price` FROM `coupons` WHERE `coupon_name` = '" + promo_field.getText().toString() + "' " +
                     "AND `start_date` <= CURDATE() AND `end_date` >= CURDATE() AND `min_price` <= '" + subT.getText().toString() + "' AND `status` = '1'";
-            StringRequest stringRequest = new StringRequest(Request.Method.POST, config.COUPON,
+            StringRequest stringRequest = new StringRequest(Request.Method.POST, DoConfig.COUPON,
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
@@ -321,7 +330,7 @@ public class checkout extends AppCompatActivity implements AdapterView.OnItemCli
                 @Override
                 protected Map<String, String> getParams() {
                     Map<String, String> params = new HashMap<String, String>();
-                    params.put(config.QUERY, sql);
+                    params.put(DoConfig.QUERY, sql);
                     return params;
                 }
             };
@@ -339,11 +348,11 @@ public class checkout extends AppCompatActivity implements AdapterView.OnItemCli
         String discount = "";
         try {
             JSONObject jsonObject = new JSONObject(response);
-            JSONArray result = jsonObject.getJSONArray(config.RESULT);
+            JSONArray result = jsonObject.getJSONArray(DoConfig.RESULT);
             for (int i = 0; i <= result.length(); i++) {
                 JSONObject collegeData = result.getJSONObject(i);
-                discount = collegeData.getString(config.PRO_DISCOUNT_PRICE);
-                id = collegeData.getString(config.CAT_ID);
+                discount = collegeData.getString(DoConfig.PRO_DISCOUNT_PRICE);
+                id = collegeData.getString(DoConfig.CAT_ID);
                 disT.setText(discount);
                 double subtotal = Double.parseDouble(grnT.getText().toString());
                 double total = subtotal - Double.parseDouble(discount);
@@ -387,7 +396,7 @@ public class checkout extends AppCompatActivity implements AdapterView.OnItemCli
                     "`product_name`,`product_productinfo`.`current_price`,`product_productinfo`.`shipping_id` FROM `shopping_carts` INNER JOIN " +
                     "`product_productinfo` ON `shopping_carts`.`product_id` = `product_productinfo`.id WHERE " +
                     "`shopping_carts`.`session_id` = '" + session + "'";
-            StringRequest stringRequest = new StringRequest(Request.Method.POST, config.CHECK_PRO_DATA,
+            StringRequest stringRequest = new StringRequest(Request.Method.POST, DoConfig.CHECK_PRO_DATA,
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
@@ -403,7 +412,7 @@ public class checkout extends AppCompatActivity implements AdapterView.OnItemCli
                 @Override
                 protected Map<String, String> getParams() {
                     Map<String, String> params = new HashMap<String, String>();
-                    params.put(config.QUERY, sql);
+                    params.put(DoConfig.QUERY, sql);
                     return params;
                 }
             };
@@ -422,7 +431,7 @@ public class checkout extends AppCompatActivity implements AdapterView.OnItemCli
         try {
             String sql = "SELECT districts.district_name AS 'charge',`districts`.`id` FROM `districts`";
 
-            StringRequest stringRequest = new StringRequest(Request.Method.POST, config.DISTRICT_DELIVERY,
+            StringRequest stringRequest = new StringRequest(Request.Method.POST, DoConfig.DISTRICT_DELIVERY,
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
@@ -438,7 +447,7 @@ public class checkout extends AppCompatActivity implements AdapterView.OnItemCli
                 @Override
                 protected Map<String, String> getParams() {
                     Map<String, String> params = new HashMap<String, String>();
-                    params.put(config.QUERY, sql);
+                    params.put(DoConfig.QUERY, sql);
                     return params;
                 }
             };
@@ -457,7 +466,7 @@ public class checkout extends AppCompatActivity implements AdapterView.OnItemCli
         try {
             String sql = "SELECT thana_name AS 'charge',id FROM `thanas` WHERE `district_id` = '" + thID + "'";
 
-            StringRequest stringRequest = new StringRequest(Request.Method.POST, config.DISTRICT_DELIVERY,
+            StringRequest stringRequest = new StringRequest(Request.Method.POST, DoConfig.DISTRICT_DELIVERY,
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
@@ -473,7 +482,7 @@ public class checkout extends AppCompatActivity implements AdapterView.OnItemCli
                 @Override
                 protected Map<String, String> getParams() {
                     Map<String, String> params = new HashMap<String, String>();
-                    params.put(config.QUERY, sql);
+                    params.put(DoConfig.QUERY, sql);
                     return params;
                 }
             };
@@ -497,12 +506,12 @@ public class checkout extends AppCompatActivity implements AdapterView.OnItemCli
             districtList.clear();
             model.clear();
             JSONObject jsonObject = new JSONObject(response);
-            JSONArray result = jsonObject.getJSONArray(config.RESULT);
+            JSONArray result = jsonObject.getJSONArray(DoConfig.RESULT);
             for (int i = 0; i <= result.length(); i++) {
                 JSONObject collegeData = result.getJSONObject(i);
-                name = collegeData.getString(config.PRO_NAME);
-                quant = collegeData.getString(config.PRO_CURRENT_PRICE);
-                id = collegeData.getString(config.CAT_ID);
+                name = collegeData.getString(DoConfig.PRO_NAME);
+                quant = collegeData.getString(DoConfig.PRO_CURRENT_PRICE);
+                id = collegeData.getString(DoConfig.CAT_ID);
                 cat_models = new cat_model(quant, name, id);
                 districtList.add(cat_models);
                 model.add(quant);
@@ -521,12 +530,12 @@ public class checkout extends AppCompatActivity implements AdapterView.OnItemCli
             thanaList.clear();
             thanamodel.clear();
             JSONObject jsonObject = new JSONObject(response);
-            JSONArray result = jsonObject.getJSONArray(config.RESULT);
+            JSONArray result = jsonObject.getJSONArray(DoConfig.RESULT);
             for (int i = 0; i <= result.length(); i++) {
                 JSONObject collegeData = result.getJSONObject(i);
-                name = collegeData.getString(config.PRO_NAME);
-                quant = collegeData.getString(config.PRO_CURRENT_PRICE);
-                id = collegeData.getString(config.CAT_ID);
+                name = collegeData.getString(DoConfig.PRO_NAME);
+                quant = collegeData.getString(DoConfig.PRO_CURRENT_PRICE);
+                id = collegeData.getString(DoConfig.CAT_ID);
                 cat_models = new cat_model(quant, name, id);
                 thanaList.add(cat_models);
                 thanamodel.add(quant);
@@ -541,39 +550,38 @@ public class checkout extends AppCompatActivity implements AdapterView.OnItemCli
         try {
             if (first_name.getText().toString().trim().equals("")) {
                 first_name.setError("Empty First Name");
-                Toast.makeText(checkout.this, "Empty First Name", Toast.LENGTH_LONG).show();
+                Toast.makeText(checkout.this, "Empty First Name", Toast.LENGTH_SHORT).show();
                 return;
             }
             if (Phone.getText().toString().trim().equals("")) {
                 Phone.setError("Empty Phone Number");
-                Toast.makeText(checkout.this, "Empty Phone Number", Toast.LENGTH_LONG).show();
+                Toast.makeText(checkout.this, "Empty Phone Number", Toast.LENGTH_SHORT).show();
                 return;
             }
             if (district.getText().toString().trim().equals("") && districtid.equals("")) {
                 district.setError("Select District");
-                Toast.makeText(checkout.this, "Select District", Toast.LENGTH_LONG).show();
+                Toast.makeText(checkout.this, "Select District", Toast.LENGTH_SHORT).show();
                 return;
             }
             if (fulladdress.getText().toString().trim().equals("")) {
                 fulladdress.setError("Empty Full Address");
-                Toast.makeText(checkout.this, "Empty Full Address", Toast.LENGTH_LONG).show();
+                Toast.makeText(checkout.this, "Empty Full Address", Toast.LENGTH_SHORT).show();
                 return;
             }
-            if (!cash_rd.isSelected() && !pay_type.equals("cash")) {
+            if (!cash_rd.isSelected() && !pay_type.equals("cash") && !online_id.isSelected()) {
                 if (mobileNO.equals("")) {
-                    Toast.makeText(checkout.this, "Empty Mobile No", Toast.LENGTH_LONG).show();
-                    Toast.makeText(checkout.this, "Please Select Payment Method", Toast.LENGTH_LONG).show();
+                    Toast.makeText(checkout.this, "Empty Mobile No", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(checkout.this, "Please Select Payment Method", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 if (trnID.equals("")) {
-                    Toast.makeText(checkout.this, "Empty Transaction ID", Toast.LENGTH_LONG).show();
+                    Toast.makeText(checkout.this, "Empty Transaction ID", Toast.LENGTH_SHORT).show();
                     return;
                 }
             }
             submit();
         } catch (Exception e) {
         }
-
     }
 
     private void submit() {
@@ -611,13 +619,13 @@ public class checkout extends AppCompatActivity implements AdapterView.OnItemCli
                 "'" + subTK + "','" + totalTK + "'," +
                 "'" + session + "','0')";
 
-        operation.invoice_proccess(context, sql1, sql2, progressDialog, id, subTK, disTK, String.valueOf(del_ch), grnT.getText().toString());
+        operation.invoice_proccess(context, sql1, sql2, progressDialog, id, subTK, disTK, String.valueOf(del_ch), grnT.getText().toString(),pay_type);
     }
 
     public void deliveryAdd(Context context, String sql, ProgressDialog progressDialog) {
 
         try {
-            StringRequest stringRequest = new StringRequest(Request.Method.POST, config.INSERT_DELIVERY,
+            StringRequest stringRequest = new StringRequest(Request.Method.POST, DoConfig.INSERT_DELIVERY,
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
@@ -644,7 +652,7 @@ public class checkout extends AppCompatActivity implements AdapterView.OnItemCli
                 @Override
                 protected Map<String, String> getParams() {
                     Map<String, String> params = new HashMap<String, String>();
-                    params.put(config.QUERY, sql);
+                    params.put(DoConfig.QUERY, sql);
                     return params;
                 }
             };
@@ -664,7 +672,7 @@ public class checkout extends AppCompatActivity implements AdapterView.OnItemCli
                 progress = ProgressDialog.show(checkout.this, "", "Loading", false, false);
             }
 //            String sql = "SELECT id FROM `guest` WHERE (email = '"+username+"' OR phone = '"+username+"') AND password = '"+pass+"'";
-            StringRequest stringRequest = new StringRequest(Request.Method.POST, config.GET_LOGIN_INFO,
+            StringRequest stringRequest = new StringRequest(Request.Method.POST, DoConfig.GET_LOGIN_INFO,
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
@@ -693,8 +701,8 @@ public class checkout extends AppCompatActivity implements AdapterView.OnItemCli
                 @Override
                 protected Map<String, String> getParams() {
                     Map<String, String> params = new HashMap<String, String>();
-                    params.put(config.QUERY, username);
-                    params.put(config.PRO_SIZE, pass);
+                    params.put(DoConfig.QUERY, username);
+                    params.put(DoConfig.PRO_SIZE, pass);
                     return params;
                 }
             };
@@ -712,15 +720,15 @@ public class checkout extends AppCompatActivity implements AdapterView.OnItemCli
                 homeViewModel.insertuser(context, firstname + " " + lastname, phone, "", pass, response);
             } else {
                 JSONObject jsonObject = new JSONObject(response);
-                JSONArray result = jsonObject.getJSONArray(config.RESULT);
+                JSONArray result = jsonObject.getJSONArray(DoConfig.RESULT);
                 for (int i = 0; i <= result.length(); i++) {
                     JSONObject collegeData = result.getJSONObject(i);
-                    gid = collegeData.getString(config.CAT_ID);
-                    firstname = collegeData.getString(config.PRO_NAME);
-                    lastname = collegeData.getString(config.CAT_NAME);
+                    gid = collegeData.getString(DoConfig.CAT_ID);
+                    firstname = collegeData.getString(DoConfig.PRO_NAME);
+                    lastname = collegeData.getString(DoConfig.CAT_NAME);
 //                email = collegeData.getString(config.EMAIL);
-                    phone = collegeData.getString(config.PHONE);
-                    Address = collegeData.getString(config.PRO_SALE_PRICE);
+                    phone = collegeData.getString(DoConfig.PHONE);
+                    Address = collegeData.getString(DoConfig.PRO_SALE_PRICE);
 
 //                    invoice_query(delID, gid, context,progressDialog);
                     homeViewModel.insertuser(context, firstname + " " + lastname, phone, "", pass, gid);
@@ -823,7 +831,7 @@ public class checkout extends AppCompatActivity implements AdapterView.OnItemCli
         try {
 
             String query = "SELECT * FROM guest WHERE id = '" + sql + "'";
-            StringRequest stringRequest = new StringRequest(Request.Method.POST, config.GUEST_DATA,
+            StringRequest stringRequest = new StringRequest(Request.Method.POST, DoConfig.GUEST_DATA,
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
@@ -842,7 +850,7 @@ public class checkout extends AppCompatActivity implements AdapterView.OnItemCli
                 @Override
                 protected Map<String, String> getParams() {
                     Map<String, String> params = new HashMap<String, String>();
-                    params.put(config.QUERY, query);
+                    params.put(DoConfig.QUERY, query);
                     return params;
                 }
             };
@@ -859,13 +867,13 @@ public class checkout extends AppCompatActivity implements AdapterView.OnItemCli
     private void showGuest(String response) {
         try {
             JSONObject jsonObject = new JSONObject(response);
-            JSONArray result = jsonObject.getJSONArray(config.RESULT);
+            JSONArray result = jsonObject.getJSONArray(DoConfig.RESULT);
             for (int i = 0; i <= result.length(); i++) {
                 JSONObject collegeData = result.getJSONObject(i);
-                first_name.setText(collegeData.getString(config.PRO_NAME));
-                Phone.setText(collegeData.getString(config.PRO_DISCOUNT_PRICE));
-                email = collegeData.getString(config.EMAIL);
-                fulladdress.setText(collegeData.getString(config.PRO_CURRENT_PRICE));
+                first_name.setText(collegeData.getString(DoConfig.PRO_NAME));
+                Phone.setText(collegeData.getString(DoConfig.PRO_DISCOUNT_PRICE));
+                email = collegeData.getString(DoConfig.EMAIL);
+                fulladdress.setText(collegeData.getString(DoConfig.PRO_CURRENT_PRICE));
             }
         } catch (Exception e) {
         }
@@ -889,7 +897,7 @@ public class checkout extends AppCompatActivity implements AdapterView.OnItemCli
                     "INNER JOIN zone_districts ON zone_districts.`zone_id` = delivery_charges.`zone_id` " +
                     "WHERE delivery_charges.`shipping_id` IN (" + shipping + ") AND zone_districts.`thana_id` = '" + sql + "'";
 
-            StringRequest stringRequest = new StringRequest(Request.Method.POST, config.GET_ID,
+            StringRequest stringRequest = new StringRequest(Request.Method.POST, DoConfig.GET_ID,
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
@@ -937,7 +945,7 @@ public class checkout extends AppCompatActivity implements AdapterView.OnItemCli
                 @Override
                 protected Map<String, String> getParams() {
                     Map<String, String> params = new HashMap<String, String>();
-                    params.put(config.QUERY, query);
+                    params.put(DoConfig.QUERY, query);
                     return params;
                 }
             };
@@ -1005,7 +1013,7 @@ public class checkout extends AppCompatActivity implements AdapterView.OnItemCli
                                String password, String address, String reponse, String check, ProgressDialog progressDialog, ProgressDialog progress) {
         try {
             homeViewModel = new HomeViewModel();
-            StringRequest stringRequest = new StringRequest(Request.Method.POST, config.GET_GUEST_REG,
+            StringRequest stringRequest = new StringRequest(Request.Method.POST, DoConfig.GET_GUEST_REG,
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
@@ -1035,12 +1043,12 @@ public class checkout extends AppCompatActivity implements AdapterView.OnItemCli
                 @Override
                 protected Map<String, String> getParams() {
                     Map<String, String> params = new HashMap<String, String>();
-                    params.put(config.FIRST_N, firstname + " " + lastname);
-                    params.put(config.LAST_N, "");
-                    params.put(config.EMAIL, email);
-                    params.put(config.PHONE, phone);
-                    params.put(config.ADDRESS, address);
-                    params.put(config.PASS, password);
+                    params.put(DoConfig.FIRST_N, firstname + " " + lastname);
+                    params.put(DoConfig.LAST_N, "");
+                    params.put(DoConfig.EMAIL, email);
+                    params.put(DoConfig.PHONE, phone);
+                    params.put(DoConfig.ADDRESS, address);
+                    params.put(DoConfig.PASS, password);
                     return params;
                 }
             };
@@ -1058,7 +1066,7 @@ public class checkout extends AppCompatActivity implements AdapterView.OnItemCli
                                   String password, String address, String reponse, String check, ProgressDialog progressDialog, ProgressDialog progress) {
         try {
             String sql = "SELECT id FROM guest WHERE phone = '" + phone + "'";
-            StringRequest stringRequest = new StringRequest(Request.Method.POST, config.GET_ID,
+            StringRequest stringRequest = new StringRequest(Request.Method.POST, DoConfig.GET_ID,
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
@@ -1089,7 +1097,7 @@ public class checkout extends AppCompatActivity implements AdapterView.OnItemCli
                 @Override
                 protected Map<String, String> getParams() {
                     Map<String, String> params = new HashMap<String, String>();
-                    params.put(config.QUERY, sql);
+                    params.put(DoConfig.QUERY, sql);
                     return params;
                 }
             };

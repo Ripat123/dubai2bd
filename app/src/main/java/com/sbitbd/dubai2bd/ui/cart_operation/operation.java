@@ -107,7 +107,7 @@ public class operation {
         try {
             String sql = "UPDATE `productstocks` SET `quentity` = `quentity` - '"+quant+"' WHERE `product_id` " +
                     "= '"+id+"' AND `size` = '"+size+"' AND `color` = '"+color+"'";
-            StringRequest stringRequest = new StringRequest(Request.Method.POST, config.INSERT,
+            StringRequest stringRequest = new StringRequest(Request.Method.POST, DoConfig.INSERT,
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
@@ -125,7 +125,7 @@ public class operation {
                 @Override
                 protected Map<String, String> getParams() {
                     Map<String, String> params = new HashMap<String, String>();
-                    params.put(config.QUERY, sql);
+                    params.put(DoConfig.QUERY, sql);
                     return params;
                 }
             };
@@ -170,7 +170,7 @@ public class operation {
         try {
             String sql = "INSERT INTO `shopping_carts` (`product_id`,`session_id`,`status`,`quantity`,color,size," +
                     "`created_at`) VALUES ('" + proID + "','" + Session + "','0','" + quant + "','" + color + "','" + size + "','" + date + "')";
-            StringRequest stringRequest = new StringRequest(Request.Method.POST, config.INSERT,
+            StringRequest stringRequest = new StringRequest(Request.Method.POST, DoConfig.INSERT,
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
@@ -190,7 +190,7 @@ public class operation {
                 @Override
                 protected Map<String, String> getParams() {
                     Map<String, String> params = new HashMap<String, String>();
-                    params.put(config.QUERY, sql);
+                    params.put(DoConfig.QUERY, sql);
                     return params;
                 }
             };
@@ -213,12 +213,12 @@ public class operation {
         cart_model cart_model;
         try {
             JSONObject jsonObject = new JSONObject(response);
-            JSONArray result = jsonObject.getJSONArray(config.RESULT);
+            JSONArray result = jsonObject.getJSONArray(DoConfig.RESULT);
             for (int i = 0; i <= result.length(); i++) {
                 JSONObject collegeData = result.getJSONObject(i);
-                name = collegeData.getString(config.PRO_NAME);
-                img = collegeData.getString(config.PRO_IMAGE);
-                price = Double.parseDouble(collegeData.getString(config.PRO_CURRENT_PRICE));
+                name = collegeData.getString(DoConfig.PRO_NAME);
+                img = collegeData.getString(DoConfig.PRO_IMAGE);
+                price = Double.parseDouble(collegeData.getString(DoConfig.PRO_CURRENT_PRICE));
                 double d_quant = Double.parseDouble(quant);
                 double total = price * d_quant;
 //                cart_model = new cart_model("Inspiron 15","150 x 1","150","1", R.drawable.sbit);
@@ -235,7 +235,7 @@ public class operation {
         try {
             String sql = "SELECT `product_productinfo`.`product_name`,`product_productinfo`.`current_price`," +
                     "`product_productinfo`.`image` FROM `product_productinfo` WHERE `product_productinfo`.id = '" + id + "'";
-            StringRequest stringRequest = new StringRequest(Request.Method.POST, config.CART_DATA,
+            StringRequest stringRequest = new StringRequest(Request.Method.POST, DoConfig.CART_DATA,
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
@@ -258,7 +258,7 @@ public class operation {
                 @Override
                 protected Map<String, String> getParams() {
                     Map<String, String> params = new HashMap<String, String>();
-                    params.put(config.QUERY, sql);
+                    params.put(DoConfig.QUERY, sql);
                     return params;
                 }
             };
@@ -279,15 +279,15 @@ public class operation {
         pro_model cat_models;
         try {
             JSONObject jsonObject = new JSONObject(response);
-            JSONArray result = jsonObject.getJSONArray(config.RESULT);
+            JSONArray result = jsonObject.getJSONArray(DoConfig.RESULT);
             for (int i = 0; i <= result.length(); i++) {
                 JSONObject collegeData = result.getJSONObject(i);
-                proName = collegeData.getString(config.PRO_NAME);
-                size = collegeData.getString(config.CAT_NAME);
-                price = collegeData.getString(config.PRO_DISCOUNT_PRICE);
-                dis_price = collegeData.getString(config.EMAIL);
-                dis_val = collegeData.getString(config.PRO_CURRENT_PRICE);
-                image = collegeData.getString(config.PRO_IMAGE);
+                proName = collegeData.getString(DoConfig.PRO_NAME);
+                size = collegeData.getString(DoConfig.CAT_NAME);
+                price = collegeData.getString(DoConfig.PRO_DISCOUNT_PRICE);
+                dis_price = collegeData.getString(DoConfig.EMAIL);
+                dis_val = collegeData.getString(DoConfig.PRO_CURRENT_PRICE);
+                image = collegeData.getString(DoConfig.PRO_IMAGE);
 
                 cat_models = new pro_model(image, proName, size, price, dis_val, id, dis_price);
                 return cat_models;
@@ -322,7 +322,7 @@ public class operation {
         try {
             String sql = "UPDATE shopping_carts SET quantity = '" + quantity + "' WHERE session_id = " +
                     "'" + Session + "' AND product_id = '" + proID + "' AND color = '" + color + "' AND size = '" + size + "'";
-            StringRequest stringRequest = new StringRequest(Request.Method.POST, config.INSERT,
+            StringRequest stringRequest = new StringRequest(Request.Method.POST, DoConfig.INSERT,
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
@@ -340,7 +340,7 @@ public class operation {
                 @Override
                 protected Map<String, String> getParams() {
                     Map<String, String> params = new HashMap<String, String>();
-                    params.put(config.QUERY, sql);
+                    params.put(DoConfig.QUERY, sql);
                     return params;
                 }
             };
@@ -381,7 +381,7 @@ public class operation {
         try {
             String sql = "DELETE FROM shopping_carts WHERE session_id = " +
                     "'" + ses + "' AND product_id = '" + proID + "' AND color = '"+color+"' AND size = '"+size+"'";
-            StringRequest stringRequest = new StringRequest(Request.Method.POST, config.INSERT,
+            StringRequest stringRequest = new StringRequest(Request.Method.POST, DoConfig.INSERT,
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
@@ -399,7 +399,7 @@ public class operation {
                 @Override
                 protected Map<String, String> getParams() {
                     Map<String, String> params = new HashMap<String, String>();
-                    params.put(config.QUERY, sql);
+                    params.put(DoConfig.QUERY, sql);
                     return params;
                 }
             };
@@ -422,14 +422,14 @@ public class operation {
         List<String> shipID = new ArrayList<>();
         try {
             JSONObject jsonObject = new JSONObject(response);
-            JSONArray result = jsonObject.getJSONArray(config.RESULT);
+            JSONArray result = jsonObject.getJSONArray(DoConfig.RESULT);
             for (int i = 0; i <= result.length(); i++) {
                 JSONObject collegeData = result.getJSONObject(i);
-                name = collegeData.getString(config.PRO_NAME);
-                quant = collegeData.getString(config.CAT_NAME);
-                id = collegeData.getString(config.CAT_ID);
-                price = collegeData.getString(config.PRO_CURRENT_PRICE);
-                shipping = collegeData.getString(config.SHIPPING);
+                name = collegeData.getString(DoConfig.PRO_NAME);
+                quant = collegeData.getString(DoConfig.CAT_NAME);
+                id = collegeData.getString(DoConfig.CAT_ID);
+                price = collegeData.getString(DoConfig.PRO_CURRENT_PRICE);
+                shipping = collegeData.getString(DoConfig.SHIPPING);
                 shipID.add(shipping);
                 double quantity = Double.parseDouble(quant);
                 double cur_price = Double.parseDouble(price);
@@ -445,7 +445,7 @@ public class operation {
     public void insertuser(Context context, String firstname, String lastname, String phone, String email, String password, String address) {
         try {
             homeViewModel = new HomeViewModel();
-            StringRequest stringRequest = new StringRequest(Request.Method.POST, config.GUEST_REG,
+            StringRequest stringRequest = new StringRequest(Request.Method.POST, DoConfig.GUEST_REG,
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
@@ -467,12 +467,12 @@ public class operation {
                 @Override
                 protected Map<String, String> getParams() {
                     Map<String, String> params = new HashMap<String, String>();
-                    params.put(config.FIRST_N, firstname+ " "+ lastname);
-                    params.put(config.LAST_N, "");
-                    params.put(config.EMAIL, email);
-                    params.put(config.PHONE, phone);
-                    params.put(config.ADDRESS, address);
-                    params.put(config.PASS, password);
+                    params.put(DoConfig.FIRST_N, firstname+ " "+ lastname);
+                    params.put(DoConfig.LAST_N, "");
+                    params.put(DoConfig.EMAIL, email);
+                    params.put(DoConfig.PHONE, phone);
+                    params.put(DoConfig.ADDRESS, address);
+                    params.put(DoConfig.PASS, password);
                     return params;
                 }
             };
@@ -494,16 +494,19 @@ public class operation {
     }
 
     public void invoice_proccess(Context context, String sql, String sql1, ProgressDialog progressDialog,
-                                 String couponid,String subT,String disT,String delT,String totalT) {
+                                 String couponid,String subT,String disT,String delT,String totalT,String pay_type) {
         try {
             String sql2 = "SELECT SUBSTR(MAX(invoice_id),5,2) AS 'invoice_id', SUBSTR(CURRENT_DATE(),9,2) AS 'product_name'," +
                     "DATE_FORMAT(CURDATE(), '%y%m%d') AS 'created_at',SUBSTR(MAX(invoice_id),7,5) AS 'status' FROM invoices";
-            StringRequest stringRequest = new StringRequest(Request.Method.POST, config.ORDER_DATA,
+            StringRequest stringRequest = new StringRequest(Request.Method.POST, DoConfig.ORDER_DATA,
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
                             String id = createInvoiceID(response);
                             String query = sql + id + sql1;
+                            balance_add(context,"INSERT INTO `invoice_balance_sheet`(`invoice_id`, `customer_id`, " +
+                                    "`amount`, `payment`, `due`, `attempt`) VALUES ('"+id+"','"+homeViewModel.getGuestID(context)+"'" +
+                                    ",'"+totalT+"','0.00','"+totalT+"','0')");
                             addInvoice(context, query, progressDialog, couponid,subT,disT,delT,totalT);
 
                         }
@@ -518,7 +521,41 @@ public class operation {
                 @Override
                 protected Map<String, String> getParams() {
                     Map<String, String> params = new HashMap<String, String>();
-                    params.put(config.QUERY, sql2);
+                    params.put(DoConfig.QUERY, sql2);
+                    return params;
+                }
+            };
+            RequestQueue requestQueue = Volley.newRequestQueue(context);
+            stringRequest.setRetryPolicy(new DefaultRetryPolicy(
+                    10000,
+                    DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                    DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+            requestQueue.add(stringRequest);
+        } catch (Exception e) {
+        }
+    }
+
+    private void balance_add(Context context, String sql) {
+        try {
+            StringRequest stringRequest = new StringRequest(Request.Method.POST, DoConfig.INSERT,
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            if (!response.equals("1")) {
+                                Toast.makeText(context, "Balance unsuccessful", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }, new Response.ErrorListener() {
+
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Toast.makeText(context, error.toString(), Toast.LENGTH_LONG).show();
+                }
+            }) {
+                @Override
+                protected Map<String, String> getParams() {
+                    Map<String, String> params = new HashMap<String, String>();
+                    params.put(DoConfig.QUERY, sql);
                     return params;
                 }
             };
@@ -536,7 +573,7 @@ public class operation {
                               String disT,String delT,String totalT) {
         try {
             JSONObject jsonObject = new JSONObject(response);
-            JSONArray result = jsonObject.getJSONArray(config.RESULT);
+            JSONArray result = jsonObject.getJSONArray(DoConfig.RESULT);
             for (int i = 0; i <= result.length(); i++) {
                 JSONObject collegeData = result.getJSONObject(i);
                 config.Update(context, "UPDATE `shopping_carts` SET `status` = '1' WHERE " +
@@ -556,8 +593,8 @@ public class operation {
 //                dialogBuilder.show();
                 checkout checkout = new checkout();
                 Intent intent = new Intent(context, invoice.class);
-                intent.putExtra("invoice",collegeData.getString(config.PRO_SIZE));
-                intent.putExtra("delivery",reduce_date(collegeData.getString(config.CAT_ID)) + " to " + reduce_date(collegeData.getString(config.PRO_NAME)));
+                intent.putExtra("invoice",collegeData.getString(DoConfig.PRO_SIZE));
+                intent.putExtra("delivery",reduce_date(collegeData.getString(DoConfig.CAT_ID)) + " to " + reduce_date(collegeData.getString(DoConfig.PRO_NAME)));
                 intent.putExtra("sub",subT);
                 intent.putExtra("dis",disT);
                 intent.putExtra("del",delT);
@@ -580,7 +617,7 @@ public class operation {
         config = new DoConfig();
         String session = homeViewModel.getSession(context);
         try {
-            StringRequest stringRequest = new StringRequest(Request.Method.POST, config.INSERT_INVOICE,
+            StringRequest stringRequest = new StringRequest(Request.Method.POST, DoConfig.INSERT_INVOICE,
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
@@ -603,7 +640,7 @@ public class operation {
                 @Override
                 protected Map<String, String> getParams() {
                     Map<String, String> params = new HashMap<String, String>();
-                    params.put(config.QUERY, sql);
+                    params.put(DoConfig.QUERY, sql);
                     return params;
                 }
             };
@@ -628,7 +665,7 @@ public class operation {
         // Private Dialog
         builder = new AlertDialog.Builder(context);
         try {
-            StringRequest stringRequest = new StringRequest(Request.Method.POST, config.SIX_DMS,
+            StringRequest stringRequest = new StringRequest(Request.Method.POST, DoConfig.SIX_DMS,
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
@@ -636,15 +673,15 @@ public class operation {
                                     try {
                                         String cus_name,cus_email,cus_phone,cus_add,cus_city,cus_country,trx_id;
                                         JSONObject jsonObject = new JSONObject(response);
-                                        JSONArray result = jsonObject.getJSONArray(config.RESULT);
+                                        JSONArray result = jsonObject.getJSONArray(DoConfig.RESULT);
                                         JSONObject collegeData = result.getJSONObject(0);
                                         String amount="10",bdt="BDT",des = "test";
-                                        cus_name = collegeData.getString(config.ONE);
-                                        cus_email = collegeData.getString(config.TWO);
-                                        cus_phone = collegeData.getString(config.THREE);
-                                        cus_add = collegeData.getString(config.FOUR);
-                                        cus_city = collegeData.getString(config.FIVE);
-                                        cus_country = collegeData.getString(config.SIX);
+                                        cus_name = collegeData.getString(DoConfig.ONE);
+                                        cus_email = collegeData.getString(DoConfig.TWO);
+                                        cus_phone = collegeData.getString(DoConfig.THREE);
+                                        cus_add = collegeData.getString(DoConfig.FOUR);
+                                        cus_city = collegeData.getString(DoConfig.FIVE);
+                                        cus_country = collegeData.getString(DoConfig.SIX);
 
                                         AamarPay aamarPay = new AamarPay(context,"aamarpay","28c78bb1f45112f5d40b956fe104645a");
                                         aamarPay.testMode(true);
@@ -755,7 +792,7 @@ public class operation {
                 @Override
                 protected Map<String, String> getParams() {
                     Map<String, String> params = new HashMap<String, String>();
-                    params.put(config.QUERY, sql);
+                    params.put(DoConfig.QUERY, sql);
                     return params;
                 }
             };
@@ -774,7 +811,7 @@ public class operation {
         long id;
         try {
             JSONObject obj = new JSONObject(INid);
-            JSONArray result = obj.getJSONArray(config.RESULT);
+            JSONArray result = obj.getJSONArray(DoConfig.RESULT);
             JSONObject employee = result.getJSONObject(0);
             thisDate = employee.getString("pro_name");
             invoice_date = employee.getString("id");
@@ -783,16 +820,16 @@ public class operation {
             if (invoice_date.equals(thisDate)) {
                 id++;
                 if (id <= 9) {
-                    return (prefix + "0000" + "" + Long.toString(id));
+                    return (prefix + "0000" + "" + id);
 
                 } else if (id <= 99) {
-                    return (prefix + "000" + "" + Long.toString(id));
+                    return (prefix + "000" + "" + id);
                 } else if (id <= 999) {
-                    return (prefix + "00" + "" + Long.toString(id));
+                    return (prefix + "00" + "" + id);
                 } else if (id <= 9999) {
-                    return (prefix + "0" + "" + Long.toString(id));
+                    return (prefix + "0" + "" + id);
                 } else if (id <= 99999) {
-                    return (prefix + "" + "" + Long.toString(id));
+                    return (prefix + "" + "" + id);
                 }
             } else {
                 return (prefix + "0000" + "" + "1");
