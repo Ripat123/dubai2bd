@@ -568,7 +568,7 @@ public class checkout extends AppCompatActivity implements AdapterView.OnItemCli
                 Toast.makeText(checkout.this, "Empty Full Address", Toast.LENGTH_SHORT).show();
                 return;
             }
-            if (!cash_rd.isSelected() && !pay_type.equals("cash") && !online_id.isSelected()) {
+            if (!cash_rd.isSelected() && !pay_type.equals("cash") && !online_id.isSelected() && !pay_type.equals("online")) {
                 if (mobileNO.equals("")) {
                     Toast.makeText(checkout.this, "Empty Mobile No", Toast.LENGTH_SHORT).show();
                     Toast.makeText(checkout.this, "Please Select Payment Method", Toast.LENGTH_SHORT).show();

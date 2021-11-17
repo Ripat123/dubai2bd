@@ -630,6 +630,7 @@ public class operation {
                                     dialogBuilder.setView(editText);
                                     dialogBuilder.setNegativeButton("NO",(dialog, which) -> {
                                         dialog.dismiss();
+                                        Invoice_json(response, context, cuoponID, session, subT, disT, delT, totalT);
                                     });
                                     dialogBuilder.setPositiveButton("Yes",(dialog, which) -> {
                                         if (editText.getText().toString().equals("") || editText.getText().toString().equals("0")) {
@@ -717,6 +718,7 @@ public class operation {
                                                 Log.d("TEST_IF", message);
                                                 dialogBuilder.dismissDialog();
                                                 dialogBuilder.errorPopUp(message);
+                                                progressDialog.dismiss();
                                             } catch (Exception e) {
                                                 e.printStackTrace();
                                             }
@@ -776,6 +778,7 @@ public class operation {
                                                         "`amount`, `payment`, `due`, `attempt`) VALUES ('" + inv + "','" + homeViewModel.getGuestID(context) + "'" +
                                                         ",'" + totalT + "','"+amount+"','" + due + "','1')","failed balance entry");
                                                 Invoice_json(response1, context, cuoponID, session, subT, disT, delT, totalT);
+                                                progressDialog.dismiss();
                                             }catch (Exception e){
                                             }
                                         }
@@ -784,7 +787,7 @@ public class operation {
                                         public void onPaymentFailure(JSONObject jsonObject) {
                                             Log.d("TEST_PF", jsonObject.toString());
                                             dialogBuilder.dismissDialog();
-
+                                            progressDialog.dismiss();
                                             builder.setTitle("Payment Failed Response");
                                             builder.setMessage(jsonObject.toString());
 
@@ -796,7 +799,7 @@ public class operation {
                                         public void onPaymentProcessingFailed(JSONObject jsonObject) {
                                             Log.d("TEST_PPF", jsonObject.toString());
                                             dialogBuilder.dismissDialog();
-
+                                            progressDialog.dismiss();
                                             builder.setTitle("Payment Processing Failed Response");
                                             builder.setMessage(jsonObject.toString());
 
@@ -808,13 +811,14 @@ public class operation {
                                         public void onPaymentCancel(JSONObject jsonObject) {
                                             Log.d("TEST_PC", jsonObject.toString());
                                             try {
+                                                progressDialog.dismiss();
                                                 // Call the transaction verification check validity
                                                 aamarPay.getTransactionInfo(jsonObject.getString("trx_id"), new AamarPay.TransactionInfoListener() {
                                                     @Override
                                                     public void onSuccess(JSONObject jsonObject) {
                                                         Log.d("TEST_", jsonObject.toString());
                                                         dialogBuilder.dismissDialog();
-
+                                                        Invoice_json(response1, context, cuoponID, session, subT, disT, delT, totalT);
                                                         builder.setTitle("Trx Verification Success Response");
                                                         builder.setMessage(jsonObject.toString());
 
