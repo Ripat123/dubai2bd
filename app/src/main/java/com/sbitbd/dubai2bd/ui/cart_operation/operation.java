@@ -766,7 +766,7 @@ public class operation {
                                                         "`card_number`, `currency_merchant`, " +
                                                         "`convertion_rate`, `ip_address`, `other_currency`, `pay_status`, " +
                                                         "`pg_txnid`, `currency`, `store_amount`, `pay_time`, `amount`, " +
-                                                        "`bank_txn`, `card_type`, `reason`, `pg_card_risklevel`, " +
+                                                        "`bank_txn`, `card_type`, `pg_card_risklevel`, " +
                                                         "`pg_error_code_details`, `session_id`) VALUES ('"+mer_txnid+"'," +
                                                         "'"+homeViewModel.getGuestID(context)+"','"+cus_name+"','"+cus_phone+"'," +
                                                         "'"+cus_email+"','"+pg_service_charge_bdt+"','"+amount_original+"'," +
