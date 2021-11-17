@@ -689,6 +689,7 @@ public class operation {
                         @Override
                         public void onResponse(String response) {
                             if (!response.trim().equals("")) {
+//                                Toast.makeText(context, response, Toast.LENGTH_LONG).show();
                                 try {
                                     String cus_name, cus_email, cus_phone, cus_add, cus_city, cus_country, trx_id;
                                     JSONObject jsonObject = new JSONObject(response);
@@ -707,9 +708,9 @@ public class operation {
                                     aamarPay.autoGenerateTransactionID(false);
                                     aamarPay.setTransactionID(UUID.randomUUID().toString() +"-"+inv);
 //                                    trx_id = aamarPay.generate_trx_id();
-                                    aamarPay.setTransactionParameter(pay, bdt, "");
+                                    aamarPay.setTransactionParameter(pay, bdt, "Customer payment");
 
-                                    aamarPay.setCustomerDetails(cus_name, cus_email, cus_phone, cus_add, cus_city, cus_country);
+                                    aamarPay.setCustomerDetails(cus_name, cus_email, cus_phone, cus_add, cus_add, "BD");
 //                                        Toast.makeText(context, trx_id, Toast.LENGTH_LONG).show();
                                     aamarPay.initPGW(new AamarPay.onInitListener() {
                                         @Override
