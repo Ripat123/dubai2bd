@@ -94,6 +94,27 @@ public class DoConfig {
     public static final String FOUR = "four";
     public static final String FIVE = "five";
     public static final String SIX = "six";
+    public static final String MER_TXNID = "mer_txnid";
+    public static final String CUS_NAME = "cus_name";
+    public static final String cus_phone = "cus_phone";
+    public static final String cus_email = "cus_email";
+    public static final String processing_charge = "processing_charge";
+    public static final String amount = "amount_bdt";
+    public static final String payment_processor = "payment_processor";
+    public static final String cardnumber = "cardnumber";
+    public static final String currency_merchant = "currency_merchant";
+    public static final String convertion_rate = "convertion_rate";
+    public static final String ip = "ip";
+    public static final String other_amount = "amount";
+    public static final String pay_status = "pay_status";
+    public static final String pg_txnid = "pg_txnid";
+    public static final String currency = "currency";
+    public static final String rec_amount = "rec_amount";
+    public static final String date_processed = "date_processed";
+    public static final String bank_trxid = "bank_trxid";
+    public static final String payment_type = "payment_type";
+    public static final String risk_level = "risk_level";
+    public static final String error_code = "error_code";
     private List<order_model> order_modelsList = new ArrayList<>();
 
     public String encrypt(String value) {

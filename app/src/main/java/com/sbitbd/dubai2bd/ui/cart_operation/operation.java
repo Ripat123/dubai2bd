@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -22,6 +23,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.sbitbd.dubai2bd.Adapter.cart_adapter;
 import com.sbitbd.dubai2bd.Adapter.cart_model;
 import com.sbitbd.dubai2bd.Adapter.checkout_pro_adapter;
@@ -30,6 +32,7 @@ import com.sbitbd.dubai2bd.Adapter.pro_model;
 import com.sbitbd.dubai2bd.Config.DoConfig;
 import com.sbitbd.dubai2bd.Config.sqliteDB;
 import com.sbitbd.dubai2bd.MainActivity;
+import com.sbitbd.dubai2bd.R;
 import com.sbitbd.dubai2bd.ui.checkout.checkout;
 import com.sbitbd.dubai2bd.ui.home.HomeViewModel;
 import com.sbitbd.dubai2bd.ui.invoice;
@@ -47,6 +50,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public class operation {
     private HomeViewModel homeViewModel = new HomeViewModel();
@@ -61,7 +65,7 @@ public class operation {
     public operation() {
     }
 
-    public void cartInsert(Context context, String proID, String quant,String min, View v,String color,String size) {
+    public void cartInsert(Context context, String proID, String quant, String min, View v, String color, String size) {
         sqliteDB sqlite_db = new sqliteDB(context);
         try {
             mainActivity = new MainActivity();
@@ -80,33 +84,32 @@ public class operation {
                     int old_quant = cursor.getInt(cursor.getColumnIndexOrThrow("quantity"));
                     int total_quant = Integer.parseInt(quant) + old_quant;
                     String net_quant = String.valueOf(total_quant);
-                    boolean check = update(context, net_quant, session, proID,color,size);
+                    boolean check = update(context, net_quant, session, proID, color, size);
                     if (check) {
-                        onlinUpdate(context, net_quant, session, proID,color,size);
+                        onlinUpdate(context, net_quant, session, proID, color, size);
 //                        stock(quant,proID,color,size,context);
                     } else {
                         Toast.makeText(context, "Update Failed", Toast.LENGTH_LONG).show();
                     }
                 } else {
-                    insertC(contentValues, sqlite_db, context, proID, quant,min, thisDate, session, v,color,size);
+                    insertC(contentValues, sqlite_db, context, proID, quant, min, thisDate, session, v, color, size);
                 }
             } else {
-                insertC(contentValues, sqlite_db, context, proID, quant,min, thisDate, session, v,color,size);
+                insertC(contentValues, sqlite_db, context, proID, quant, min, thisDate, session, v, color, size);
             }
         } catch (Exception e) {
-        }
-        finally {
+        } finally {
             try {
                 sqlite_db.close();
-            }catch (Exception e){
+            } catch (Exception e) {
             }
         }
     }
 
-    public void stock(String quant,String id,String color,String size,Context context){
+    public void stock(String quant, String id, String color, String size, Context context) {
         try {
-            String sql = "UPDATE `productstocks` SET `quentity` = `quentity` - '"+quant+"' WHERE `product_id` " +
-                    "= '"+id+"' AND `size` = '"+size+"' AND `color` = '"+color+"'";
+            String sql = "UPDATE `productstocks` SET `quentity` = `quentity` - '" + quant + "' WHERE `product_id` " +
+                    "= '" + id + "' AND `size` = '" + size + "' AND `color` = '" + color + "'";
             StringRequest stringRequest = new StringRequest(Request.Method.POST, DoConfig.INSERT,
                     new Response.Listener<String>() {
                         @Override
@@ -140,7 +143,7 @@ public class operation {
     }
 
     private void insertC(ContentValues contentValues, sqliteDB sqlite_db, Context context,
-                         String proID, String quant,String min, String thisDate, String session, View v,String color,String size) {
+                         String proID, String quant, String min, String thisDate, String session, View v, String color, String size) {
         try {
             contentValues.put("product_id", proID);
             contentValues.put("session_id", session);
@@ -152,21 +155,20 @@ public class operation {
             contentValues.put("created_at", thisDate);
             Boolean ch = sqlite_db.DataOperation(contentValues, "insert", "shopping_carts", null);
             if (ch) {
-                onlineInsert(context, proID, quant, session, thisDate, v,color,size);
+                onlineInsert(context, proID, quant, session, thisDate, v, color, size);
 //                stock(quant,proID,color,size,context);
             } else
                 Toast.makeText(context, "Failed", Toast.LENGTH_LONG).show();
         } catch (Exception e) {
-        }
-        finally {
+        } finally {
             try {
                 sqlite_db.close();
-            }catch (Exception e){
+            } catch (Exception e) {
             }
         }
     }
 
-    private void onlineInsert(Context context, String proID, String quant, String Session, String date, View v,String color,String size) {
+    private void onlineInsert(Context context, String proID, String quant, String Session, String date, View v, String color, String size) {
         try {
             String sql = "INSERT INTO `shopping_carts` (`product_id`,`session_id`,`status`,`quantity`,color,size," +
                     "`created_at`) VALUES ('" + proID + "','" + Session + "','0','" + quant + "','" + color + "','" + size + "','" + date + "')";
@@ -205,7 +207,7 @@ public class operation {
     }
 
     public void showCartJSON(String response, String quant, String min_quant, cart_adapter cart_adapter,
-                             String id,String color,String size) {
+                             String id, String color, String size) {
         double price = 0;
         String name = "";
         String img = "";
@@ -222,7 +224,7 @@ public class operation {
                 double d_quant = Double.parseDouble(quant);
                 double total = price * d_quant;
 //                cart_model = new cart_model("Inspiron 15","150 x 1","150","1", R.drawable.sbit);
-                cart_model = new cart_model(name, String.valueOf(price), quant, total, img, min_quant, id,color,size);
+                cart_model = new cart_model(name, String.valueOf(price), quant, total, img, min_quant, id, color, size);
                 cart_adapter.adduser(cart_model);
             }
 
@@ -231,7 +233,7 @@ public class operation {
     }
 
     public void onlineCart(Context context, String id, String quant, String min_quant, cart_adapter
-            cart_adapter, Button check_out_btn, ConstraintLayout empty_cart,String color,String size) {
+            cart_adapter, Button check_out_btn, ConstraintLayout empty_cart, String color, String size) {
         try {
             String sql = "SELECT `product_productinfo`.`product_name`,`product_productinfo`.`current_price`," +
                     "`product_productinfo`.`image` FROM `product_productinfo` WHERE `product_productinfo`.id = '" + id + "'";
@@ -240,7 +242,7 @@ public class operation {
                         @Override
                         public void onResponse(String response) {
                             if (!response.equals("1")) {
-                                showCartJSON(response, quant, min_quant, cart_adapter, id,color,size);
+                                showCartJSON(response, quant, min_quant, cart_adapter, id, color, size);
                             } else {
                                 check_out_btn.setEnabled(false);
                                 empty_cart.setVisibility(View.VISIBLE);
@@ -297,7 +299,7 @@ public class operation {
         return null;
     }
 
-    public boolean update(Context context, String quantity, String Session, String proID,String color,String size) {
+    public boolean update(Context context, String quantity, String Session, String proID, String color, String size) {
         boolean check = false;
         sqliteDB sqliteDB = new sqliteDB(context);
         try {
@@ -308,17 +310,16 @@ public class operation {
                             "color = '" + color + "' AND size = '" + size + "'");
 
         } catch (Exception e) {
-        }
-        finally {
+        } finally {
             try {
                 sqliteDB.close();
-            }catch (Exception e){
+            } catch (Exception e) {
             }
         }
         return check;
     }
 
-    public void onlinUpdate(Context context, String quantity, String Session, String proID,String color,String size) {
+    public void onlinUpdate(Context context, String quantity, String Session, String proID, String color, String size) {
         try {
             String sql = "UPDATE shopping_carts SET quantity = '" + quantity + "' WHERE session_id = " +
                     "'" + Session + "' AND product_id = '" + proID + "' AND color = '" + color + "' AND size = '" + size + "'";
@@ -354,33 +355,32 @@ public class operation {
         }
     }
 
-    public void deleteCart(String proID,String color,String size, Context context) {
+    public void deleteCart(String proID, String color, String size, Context context) {
         sqliteDB sqliteDB = new sqliteDB(context);
         try {
             homeViewModel = new HomeViewModel();
             String ses = homeViewModel.getSession(context);
             boolean check = sqliteDB.DataOperation(null, "delete", "shopping_carts",
-                    "product_id = '" + proID + "' AND session_id = '" + ses + "' AND color = '"+color+"' AND size = '"+size+"'");
+                    "product_id = '" + proID + "' AND session_id = '" + ses + "' AND color = '" + color + "' AND size = '" + size + "'");
             if (check) {
-                onlineDelete(proID, context, ses,color,size);
+                onlineDelete(proID, context, ses, color, size);
             } else {
                 Toast.makeText(context, "failed", Toast.LENGTH_LONG).show();
             }
 
         } catch (Exception e) {
-        }
-        finally {
+        } finally {
             try {
                 sqliteDB.close();
-            }catch (Exception e){
+            } catch (Exception e) {
             }
         }
     }
 
-    public void onlineDelete(String proID, Context context, String ses,String color,String size) {
+    public void onlineDelete(String proID, Context context, String ses, String color, String size) {
         try {
             String sql = "DELETE FROM shopping_carts WHERE session_id = " +
-                    "'" + ses + "' AND product_id = '" + proID + "' AND color = '"+color+"' AND size = '"+size+"'";
+                    "'" + ses + "' AND product_id = '" + proID + "' AND color = '" + color + "' AND size = '" + size + "'";
             StringRequest stringRequest = new StringRequest(Request.Method.POST, DoConfig.INSERT,
                     new Response.Listener<String>() {
                         @Override
@@ -467,7 +467,7 @@ public class operation {
                 @Override
                 protected Map<String, String> getParams() {
                     Map<String, String> params = new HashMap<String, String>();
-                    params.put(DoConfig.FIRST_N, firstname+ " "+ lastname);
+                    params.put(DoConfig.FIRST_N, firstname + " " + lastname);
                     params.put(DoConfig.LAST_N, "");
                     params.put(DoConfig.EMAIL, email);
                     params.put(DoConfig.PHONE, phone);
@@ -494,7 +494,7 @@ public class operation {
     }
 
     public void invoice_proccess(Context context, String sql, String sql1, ProgressDialog progressDialog,
-                                 String couponid,String subT,String disT,String delT,String totalT,String pay_type) {
+                                 String couponid, String subT, String disT, String delT, String totalT, String pay_type) {
         try {
             String sql2 = "SELECT SUBSTR(MAX(invoice_id),5,2) AS 'invoice_id', SUBSTR(CURRENT_DATE(),9,2) AS 'product_name'," +
                     "DATE_FORMAT(CURDATE(), '%y%m%d') AS 'created_at',SUBSTR(MAX(invoice_id),7,5) AS 'status' FROM invoices";
@@ -504,10 +504,10 @@ public class operation {
                         public void onResponse(String response) {
                             String id = createInvoiceID(response);
                             String query = sql + id + sql1;
-                            balance_add(context,"INSERT INTO `invoice_balance_sheet`(`invoice_id`, `customer_id`, " +
-                                    "`amount`, `payment`, `due`, `attempt`) VALUES ('"+id+"','"+homeViewModel.getGuestID(context)+"'" +
-                                    ",'"+totalT+"','0.00','"+totalT+"','0')");
-                            addInvoice(context, query, progressDialog, couponid,subT,disT,delT,totalT);
+                            balance_add(context, "INSERT INTO `invoice_balance_sheet`(`invoice_id`, `customer_id`, " +
+                                    "`amount`, `payment`, `due`, `attempt`) VALUES ('" + id + "','" + homeViewModel.getGuestID(context) + "'" +
+                                    ",'" + totalT + "','0.00','" + totalT + "','0')","Balance unsuccessful");
+                            addInvoice(context, query, progressDialog, couponid, subT, disT, delT, totalT, pay_type,id);
 
                         }
                     }, new Response.ErrorListener() {
@@ -535,14 +535,14 @@ public class operation {
         }
     }
 
-    private void balance_add(Context context, String sql) {
+    private void balance_add(Context context, String sql,String fmg) {
         try {
             StringRequest stringRequest = new StringRequest(Request.Method.POST, DoConfig.INSERT,
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
                             if (!response.equals("1")) {
-                                Toast.makeText(context, "Balance unsuccessful", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(context, fmg, Toast.LENGTH_SHORT).show();
                             }
                         }
                     }, new Response.ErrorListener() {
@@ -569,8 +569,8 @@ public class operation {
         }
     }
 
-    private void Invoice_json(String response, Context context, String cuoponID, String session,String subT,
-                              String disT,String delT,String totalT) {
+    private void Invoice_json(String response, Context context, String cuoponID, String session, String subT,
+                              String disT, String delT, String totalT) {
         try {
             JSONObject jsonObject = new JSONObject(response);
             JSONArray result = jsonObject.getJSONArray(DoConfig.RESULT);
@@ -593,12 +593,12 @@ public class operation {
 //                dialogBuilder.show();
                 checkout checkout = new checkout();
                 Intent intent = new Intent(context, invoice.class);
-                intent.putExtra("invoice",collegeData.getString(DoConfig.PRO_SIZE));
-                intent.putExtra("delivery",reduce_date(collegeData.getString(DoConfig.CAT_ID)) + " to " + reduce_date(collegeData.getString(DoConfig.PRO_NAME)));
-                intent.putExtra("sub",subT);
-                intent.putExtra("dis",disT);
-                intent.putExtra("del",delT);
-                intent.putExtra("total",totalT);
+                intent.putExtra("invoice", collegeData.getString(DoConfig.PRO_SIZE));
+                intent.putExtra("delivery", reduce_date(collegeData.getString(DoConfig.CAT_ID)) + " to " + reduce_date(collegeData.getString(DoConfig.PRO_NAME)));
+                intent.putExtra("sub", subT);
+                intent.putExtra("dis", disT);
+                intent.putExtra("del", delT);
+                intent.putExtra("total", totalT);
                 context.startActivity(intent);
                 checkout.close();
             }
@@ -612,7 +612,7 @@ public class operation {
     }
 
     private void addInvoice(Context context, String sql, ProgressDialog progressDialog, String cuoponID,
-                            String subT,String disT,String delT,String totalT) {
+                            String subT, String disT, String delT, String totalT, String pay_type,String inv) {
         homeViewModel = new HomeViewModel();
         config = new DoConfig();
         String session = homeViewModel.getSession(context);
@@ -622,9 +622,27 @@ public class operation {
                         @Override
                         public void onResponse(String response) {
                             if (!response.equals("Could not Registered in online") && !response.equals("problem")) {
+                                if (pay_type.equals("online")) {
+                                    EditText editText = new EditText(context);
+                                    MaterialAlertDialogBuilder dialogBuilder = new MaterialAlertDialogBuilder(context);
+                                    dialogBuilder.setTitle("Pay Amount");
+                                    dialogBuilder.setCancelable(false);
+                                    dialogBuilder.setView(editText);
+                                    dialogBuilder.setNegativeButton("NO",(dialog, which) -> {
+                                        dialog.dismiss();
+                                    });
+                                    dialogBuilder.setPositiveButton("Yes",(dialog, which) -> {
+                                        if (editText.getText().toString().equals("") || editText.getText().toString().equals("0")) {
+                                            Toast.makeText(context, "Empty", Toast.LENGTH_SHORT).show();
+                                            return;
+                                        }
+                                        sixdms(context, progressDialog, cuoponID, subT, disT, delT, totalT, response, inv,editText.getText().toString());
+                                    });
+                                    dialogBuilder.show();
 
-                                sixdms(context,progressDialog,cuoponID,subT,disT,delT,totalT,response);
-//                                Invoice_json(response, context, cuoponID, session,subT,disT,delT,totalT);
+                                }
+                                else
+                                    Invoice_json(response, context, cuoponID, session, subT, disT, delT, totalT);
                             } else {
                                 Toast.makeText(context, "in failed", Toast.LENGTH_LONG).show();
                             }
@@ -655,8 +673,8 @@ public class operation {
     }
 
     private void sixdms(Context context, ProgressDialog progressDialog, String cuoponID,
-                            String subT,String disT,String delT,String totalT,String response1) {
-        String sql="SELECT  `first_name` as 'one', `email` as 'two', `address` as 'four', `phone` as " +
+                        String subT, String disT, String delT, String totalT, String response1,String inv,String pay) {
+        String sql = "SELECT  `first_name` as 'one', `email` as 'two', `address` as 'four', `phone` as " +
                 "'three' FROM `delivery_infos` order by id DESC LIMIT 1";
 
         alertDialog = new ProgressDialog(context);
@@ -669,116 +687,161 @@ public class operation {
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
-                                if (!response.trim().equals("")) {
-                                    try {
-                                        String cus_name,cus_email,cus_phone,cus_add,cus_city,cus_country,trx_id;
-                                        JSONObject jsonObject = new JSONObject(response);
-                                        JSONArray result = jsonObject.getJSONArray(DoConfig.RESULT);
-                                        JSONObject collegeData = result.getJSONObject(0);
-                                        String amount="10",bdt="BDT",des = "test";
-                                        cus_name = collegeData.getString(DoConfig.ONE);
-                                        cus_email = collegeData.getString(DoConfig.TWO);
-                                        cus_phone = collegeData.getString(DoConfig.THREE);
-                                        cus_add = collegeData.getString(DoConfig.FOUR);
-                                        cus_city = collegeData.getString(DoConfig.FIVE);
-                                        cus_country = collegeData.getString(DoConfig.SIX);
+                            if (!response.trim().equals("")) {
+                                try {
+                                    String cus_name, cus_email, cus_phone, cus_add, cus_city, cus_country, trx_id;
+                                    JSONObject jsonObject = new JSONObject(response);
+                                    JSONArray result = jsonObject.getJSONArray(DoConfig.RESULT);
+                                    JSONObject collegeData = result.getJSONObject(0);
+                                    String bdt = "BDT";
+                                    cus_name = collegeData.getString(DoConfig.ONE);
+                                    cus_email = collegeData.getString(DoConfig.TWO);
+                                    cus_phone = collegeData.getString(DoConfig.THREE);
+                                    cus_add = collegeData.getString(DoConfig.FOUR);
+                                    cus_city = collegeData.getString(DoConfig.FIVE);
+                                    cus_country = collegeData.getString(DoConfig.SIX);
 
-                                        AamarPay aamarPay = new AamarPay(context,"aamarpay","28c78bb1f45112f5d40b956fe104645a");
-                                        aamarPay.testMode(true);
-                                        aamarPay.autoGenerateTransactionID(true);
-//                                        aamarPay.setTransactionID("123456");
-                                        trx_id = aamarPay.generate_trx_id();
-                                        aamarPay.setTransactionParameter(amount,bdt,des);
+                                    AamarPay aamarPay = new AamarPay(context, "aamarpay", "28c78bb1f45112f5d40b956fe104645a");
+                                    aamarPay.testMode(true);
+                                    aamarPay.autoGenerateTransactionID(false);
+                                    aamarPay.setTransactionID(UUID.randomUUID().toString() +"-"+inv);
+//                                    trx_id = aamarPay.generate_trx_id();
+                                    aamarPay.setTransactionParameter(pay, bdt, "");
 
-                                        aamarPay.setCustomerDetails("Rifat d","ripat74328@gmail.com","01845126630","feni","feni","BD");
+                                    aamarPay.setCustomerDetails(cus_name, cus_email, cus_phone, cus_add, cus_city, cus_country);
 //                                        Toast.makeText(context, trx_id, Toast.LENGTH_LONG).show();
-                                        aamarPay.initPGW(new AamarPay.onInitListener() {
-                                            @Override
-                                            public void onInitFailure(Boolean error, String message) {
-                                                try {
-                                                    Log.d("TEST_IF", message);
-                                                    dialogBuilder.dismissDialog();
-                                                    dialogBuilder.errorPopUp(message);
-                                                }catch (Exception e){
-                                                    e.printStackTrace();
-                                                }
-
+                                    aamarPay.initPGW(new AamarPay.onInitListener() {
+                                        @Override
+                                        public void onInitFailure(Boolean error, String message) {
+                                            try {
+                                                Log.d("TEST_IF", message);
+                                                dialogBuilder.dismissDialog();
+                                                dialogBuilder.errorPopUp(message);
+                                            } catch (Exception e) {
+                                                e.printStackTrace();
                                             }
 
-                                            @Override
-                                            public void onPaymentSuccess(JSONObject jsonObject) {
+                                        }
+
+                                        @Override
+                                        public void onPaymentSuccess(JSONObject jsonObject) {
+                                            try {
                                                 Log.d("TEST_PS", jsonObject.toString());
                                                 dialogBuilder.dismissDialog();
-                                                Invoice_json(response1, context, cuoponID, session,subT,disT,delT,totalT);
-//                                                builder.setTitle("Payment Success Response");
-//                                                builder.setMessage(jsonObject.toString());
-//
-//                                                AlertDialog alertDialog1 = builder.create();
-//                                                alertDialog1.show();
+                                                double due;
+                                                String mer_txnid,cus_name,cus_phone,cus_email,pg_service_charge_bdt,
+                                                        amount_original,pg_card_bank_name,
+                                                        card_number,currency_merchant,convertion_rate,ip_address,
+                                                        other_currency,pay_status,pg_txnid,currency,store_amount,pay_time,
+                                                        amount,bank_txn,card_type,pg_card_risklevel,pg_error_code_details;
+                                                mer_txnid = jsonObject.getString(DoConfig.MER_TXNID);
+                                                cus_name = jsonObject.getString(DoConfig.CUS_NAME);
+                                                cus_phone = jsonObject.getString(DoConfig.cus_phone);
+                                                cus_email = jsonObject.getString(DoConfig.cus_email);
+                                                pg_service_charge_bdt = jsonObject.getString(DoConfig.processing_charge);
+                                                amount_original = jsonObject.getString(DoConfig.amount);
+                                                pg_card_bank_name = jsonObject.getString(DoConfig.payment_processor);
+                                                card_number = jsonObject.getString(DoConfig.cardnumber);
+                                                currency_merchant = jsonObject.getString(DoConfig.currency_merchant);
+                                                convertion_rate = jsonObject.getString(DoConfig.convertion_rate);
+                                                ip_address = jsonObject.getString(DoConfig.ip);
+                                                other_currency = jsonObject.getString(DoConfig.other_amount);
+                                                pay_status = jsonObject.getString(DoConfig.pay_status);
+                                                pg_txnid = jsonObject.getString(DoConfig.pg_txnid);
+                                                currency = jsonObject.getString(DoConfig.currency);
+                                                store_amount = jsonObject.getString(DoConfig.rec_amount);
+                                                pay_time = jsonObject.getString(DoConfig.date_processed);
+                                                amount = jsonObject.getString(DoConfig.amount);
+                                                bank_txn = jsonObject.getString(DoConfig.bank_trxid);
+                                                card_type = jsonObject.getString(DoConfig.payment_type);
+                                                pg_card_risklevel = jsonObject.getString(DoConfig.risk_level);
+                                                pg_error_code_details = jsonObject.getString(DoConfig.error_code);
+                                                balance_add(context,"INSERT INTO `online_payment_details`" +
+                                                        "(`mer_txnid`, `customer_id`, `cus_name`, `cus_phone`, " +
+                                                        "`cus_email`, `pg_service_charge_bdt`, `amount_original`, " +
+                                                        " `pg_card_bank_name`, " +
+                                                        "`card_number`, `currency_merchant`, " +
+                                                        "`convertion_rate`, `ip_address`, `other_currency`, `pay_status`, " +
+                                                        "`pg_txnid`, `currency`, `store_amount`, `pay_time`, `amount`, " +
+                                                        "`bank_txn`, `card_type`, `reason`, `pg_card_risklevel`, " +
+                                                        "`pg_error_code_details`, `session_id`) VALUES ('"+mer_txnid+"'," +
+                                                        "'"+homeViewModel.getGuestID(context)+"','"+cus_name+"','"+cus_phone+"'," +
+                                                        "'"+cus_email+"','"+pg_service_charge_bdt+"','"+amount_original+"'," +
+                                                        "'"+pg_card_bank_name+"','"+card_number+"','"+currency_merchant+"'," +
+                                                        "'"+convertion_rate+"','"+ip_address+"','"+other_currency+"','"+pay_status+"'," +
+                                                        "'"+pg_txnid+"','"+currency+"','"+store_amount+"','"+pay_time+"','"+amount+"'," +
+                                                        "'"+bank_txn+"','"+card_type+"','"+pg_card_risklevel+"','"+pg_error_code_details+"','"+homeViewModel.getSession(context)+"')","failed payment entry");
+                                                due = Double.parseDouble(totalT) - Double.parseDouble(amount);
+                                                balance_add(context, "INSERT INTO `invoice_balance_sheet`(`invoice_id`, `customer_id`, " +
+                                                        "`amount`, `payment`, `due`, `attempt`) VALUES ('" + inv + "','" + homeViewModel.getGuestID(context) + "'" +
+                                                        ",'" + totalT + "','"+amount+"','" + due + "','1')","failed balance entry");
+                                                Invoice_json(response1, context, cuoponID, session, subT, disT, delT, totalT);
+                                            }catch (Exception e){
                                             }
+                                        }
 
-                                            @Override
-                                            public void onPaymentFailure(JSONObject jsonObject) {
-                                                Log.d("TEST_PF", jsonObject.toString());
-                                                dialogBuilder.dismissDialog();
+                                        @Override
+                                        public void onPaymentFailure(JSONObject jsonObject) {
+                                            Log.d("TEST_PF", jsonObject.toString());
+                                            dialogBuilder.dismissDialog();
 
-                                                builder.setTitle("Payment Failed Response");
-                                                builder.setMessage(jsonObject.toString());
+                                            builder.setTitle("Payment Failed Response");
+                                            builder.setMessage(jsonObject.toString());
 
-                                                AlertDialog alertDialog1 = builder.create();
-                                                alertDialog1.show();
+                                            AlertDialog alertDialog1 = builder.create();
+                                            alertDialog1.show();
+                                        }
+
+                                        @Override
+                                        public void onPaymentProcessingFailed(JSONObject jsonObject) {
+                                            Log.d("TEST_PPF", jsonObject.toString());
+                                            dialogBuilder.dismissDialog();
+
+                                            builder.setTitle("Payment Processing Failed Response");
+                                            builder.setMessage(jsonObject.toString());
+
+                                            AlertDialog alertDialog1 = builder.create();
+                                            alertDialog1.show();
+                                        }
+
+                                        @Override
+                                        public void onPaymentCancel(JSONObject jsonObject) {
+                                            Log.d("TEST_PC", jsonObject.toString());
+                                            try {
+                                                // Call the transaction verification check validity
+                                                aamarPay.getTransactionInfo(jsonObject.getString("trx_id"), new AamarPay.TransactionInfoListener() {
+                                                    @Override
+                                                    public void onSuccess(JSONObject jsonObject) {
+                                                        Log.d("TEST_", jsonObject.toString());
+                                                        dialogBuilder.dismissDialog();
+
+                                                        builder.setTitle("Trx Verification Success Response");
+                                                        builder.setMessage(jsonObject.toString());
+
+                                                        AlertDialog alertDialog1 = builder.create();
+                                                        alertDialog1.show();
+                                                    }
+
+                                                    @Override
+                                                    public void onFailure(Boolean error, String message) {
+                                                        Log.d("TEST_", message);
+                                                        dialogBuilder.dismissDialog();
+                                                        dialogBuilder.errorPopUp(message);
+                                                    }
+                                                });
+                                            } catch (JSONException e) {
+                                                e.printStackTrace();
                                             }
-
-                                            @Override
-                                            public void onPaymentProcessingFailed(JSONObject jsonObject) {
-                                                Log.d("TEST_PPF", jsonObject.toString());
-                                                dialogBuilder.dismissDialog();
-
-                                                builder.setTitle("Payment Processing Failed Response");
-                                                builder.setMessage(jsonObject.toString());
-
-                                                AlertDialog alertDialog1 = builder.create();
-                                                alertDialog1.show();
-                                            }
-
-                                            @Override
-                                            public void onPaymentCancel(JSONObject jsonObject) {
-                                                Log.d("TEST_PC", jsonObject.toString());
-                                                try {
-                                                    // Call the transaction verification check validity
-                                                    aamarPay.getTransactionInfo(jsonObject.getString("trx_id"), new AamarPay.TransactionInfoListener() {
-                                                        @Override
-                                                        public void onSuccess(JSONObject jsonObject) {
-                                                            Log.d("TEST_", jsonObject.toString());
-                                                            dialogBuilder.dismissDialog();
-
-                                                            builder.setTitle("Trx Verification Success Response");
-                                                            builder.setMessage(jsonObject.toString());
-
-                                                            AlertDialog alertDialog1 = builder.create();
-                                                            alertDialog1.show();
-                                                        }
-
-                                                        @Override
-                                                        public void onFailure(Boolean error, String message) {
-                                                            Log.d("TEST_", message);
-                                                            dialogBuilder.dismissDialog();
-                                                            dialogBuilder.errorPopUp(message);
-                                                        }
-                                                    });
-                                                } catch (JSONException e) {
-                                                    e.printStackTrace();
-                                                }
-                                            }
-                                        });
-                                    }catch (Exception e){
-                                        e.printStackTrace();
-                                    }
-
-//
-                                } else {
-                                    Toast.makeText(context, "in failed", Toast.LENGTH_LONG).show();
+                                        }
+                                    });
+                                } catch (Exception e) {
+                                    e.printStackTrace();
                                 }
+
+//
+                            } else {
+                                Toast.makeText(context, "in failed", Toast.LENGTH_LONG).show();
+                            }
 
                         }
                     }, new Response.ErrorListener() {
