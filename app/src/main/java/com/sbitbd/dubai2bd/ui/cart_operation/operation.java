@@ -641,7 +641,7 @@ public class operation {
                                         sixdms(context, progressDialog, cuoponID, subT, disT, delT, totalT, response, inv,editText.getText().toString());
                                     });
                                     dialogBuilder.show();
-
+                                    editText.setText(totalT);
                                 }
                                 else
                                     Invoice_json(response, context, cuoponID, session, subT, disT, delT, totalT);
