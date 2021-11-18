@@ -50,6 +50,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.UUID;
 
 public class operation {
@@ -706,7 +707,11 @@ public class operation {
                                     AamarPay aamarPay = new AamarPay(context, "aamarpay", "28c78bb1f45112f5d40b956fe104645a");
                                     aamarPay.testMode(true);
                                     aamarPay.autoGenerateTransactionID(false);
-                                    aamarPay.setTransactionID(UUID.randomUUID().toString() +"-"+inv);
+                                    Random rand = new Random();
+                                    int maxNumber = 5;
+
+                                    int randomNumber = rand.nextInt(maxNumber) + 1;
+                                    aamarPay.setTransactionID(randomNumber +"-"+inv);
 //                                    trx_id = aamarPay.generate_trx_id();
                                     aamarPay.setTransactionParameter(pay, bdt, "Customer payment");
 
