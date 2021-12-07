@@ -495,7 +495,8 @@ public class operation {
     }
 
     public void invoice_proccess(Context context, String sql, String sql1, ProgressDialog progressDialog,
-                                 String couponid, String subT, String disT, String delT, String totalT, String pay_type) {
+                                 String couponid, String subT, String disT, String delT, String totalT,
+                                 String pay_type,String city) {
         try {
             String sql2 = "SELECT SUBSTR(MAX(invoice_id),5,2) AS 'invoice_id', SUBSTR(CURRENT_DATE(),9,2) AS 'product_name'," +
                     "DATE_FORMAT(CURDATE(), '%y%m%d') AS 'created_at',SUBSTR(MAX(invoice_id),7,5) AS 'status' FROM invoices";
@@ -508,7 +509,7 @@ public class operation {
                             balance_add(context, "INSERT INTO `invoice_balance_sheet`(`invoice_id`, `customer_id`, " +
                                     "`amount`, `payment`, `due`, `attempt`) VALUES ('" + id + "','" + homeViewModel.getGuestID(context) + "'" +
                                     ",'" + totalT + "','0.00','" + totalT + "','0')","Balance unsuccessful");
-                            addInvoice(context, query, progressDialog, couponid, subT, disT, delT, totalT, pay_type,id);
+                            addInvoice(context, query, progressDialog, couponid, subT, disT, delT, totalT, pay_type,id,city);
 
                         }
                     }, new Response.ErrorListener() {
@@ -613,7 +614,7 @@ public class operation {
     }
 
     private void addInvoice(Context context, String sql, ProgressDialog progressDialog, String cuoponID,
-                            String subT, String disT, String delT, String totalT, String pay_type,String inv) {
+                            String subT, String disT, String delT, String totalT, String pay_type,String inv,String city) {
         homeViewModel = new HomeViewModel();
         config = new DoConfig();
         String session = homeViewModel.getSession(context);
@@ -638,7 +639,8 @@ public class operation {
                                             Toast.makeText(context, "Empty", Toast.LENGTH_SHORT).show();
                                             return;
                                         }
-                                        sixdms(context, progressDialog, cuoponID, subT, disT, delT, totalT, response, inv,editText.getText().toString());
+                                        sixdms(context, progressDialog, cuoponID, subT, disT, delT,
+                                                totalT, response, inv,editText.getText().toString(),city);
                                     });
                                     dialogBuilder.show();
                                     editText.setText(totalT);
@@ -675,7 +677,8 @@ public class operation {
     }
 
     private void sixdms(Context context, ProgressDialog progressDialog, String cuoponID,
-                        String subT, String disT, String delT, String totalT, String response1,String inv,String pay) {
+                        String subT, String disT, String delT, String totalT, String response1,
+                        String inv,String pay,String city) {
         String sql = "SELECT  `first_name` as 'one', `email` as 'two', `address` as 'four', `phone` as " +
                 "'three' FROM `delivery_infos` order by id DESC LIMIT 1";
 
@@ -715,7 +718,7 @@ public class operation {
 //                                    trx_id = aamarPay.generate_trx_id();
                                     aamarPay.setTransactionParameter(pay, bdt, "Customer payment");
 
-                                    aamarPay.setCustomerDetails(cus_name, cus_email, cus_phone, cus_add, cus_add, "BD");
+                                    aamarPay.setCustomerDetails(cus_name, cus_email, cus_phone, cus_add, city, "BD");
 //                                        Toast.makeText(context, trx_id, Toast.LENGTH_LONG).show();
                                     aamarPay.initPGW(new AamarPay.onInitListener() {
                                         @Override

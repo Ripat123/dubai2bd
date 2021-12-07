@@ -144,8 +144,8 @@ public class checkout extends AppCompatActivity implements AdapterView.OnItemCli
         if (gid != null && !gid.equals("")) {
             getGuestData(gid);
         } else {
-            gid = "1";
-//            sign_in(checkout.this,null,null,"1");
+//            gid = "1";
+            sign_in(checkout.this,null,null,"1");
         }
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -178,8 +178,8 @@ public class checkout extends AppCompatActivity implements AdapterView.OnItemCli
                     phone_n = dialog_view.findViewById(R.id.phone_di);
                     trn_n = dialog_view.findViewById(R.id.trnid);
                     MaterialAlertDialogBuilder dialogBuilder = new MaterialAlertDialogBuilder(checkout.this);
-                    dialogBuilder.setTitle("Nagad (Personal Account)");
-                    dialogBuilder.setMessage("+880197132322");
+                    dialogBuilder.setTitle("Nagad (Merchant Account)");
+                    dialogBuilder.setMessage("01817549090");
 
                     dialogBuilder.setView(dialog_view);
                     if (pay_type != null && pay_type.equals("nagad")) {
@@ -212,7 +212,7 @@ public class checkout extends AppCompatActivity implements AdapterView.OnItemCli
                     trn_n = dialog_view.findViewById(R.id.trnid);
                     MaterialAlertDialogBuilder dialogBuilder = new MaterialAlertDialogBuilder(checkout.this);
                     dialogBuilder.setTitle("Rocket (Personal Account)");
-                    dialogBuilder.setMessage("+8801971323232");
+                    dialogBuilder.setMessage("01832-3065409");
 
                     dialogBuilder.setView(dialog_view);
                     if (pay_type != null && pay_type.equals("rocket")) {
@@ -245,7 +245,7 @@ public class checkout extends AppCompatActivity implements AdapterView.OnItemCli
                     trn_n = dialog_view.findViewById(R.id.trnid);
                     MaterialAlertDialogBuilder dialogBuilder = new MaterialAlertDialogBuilder(checkout.this);
                     dialogBuilder.setTitle("Bkash (Merchant Account)");
-                    dialogBuilder.setMessage("+8801317696136");
+                    dialogBuilder.setMessage("01557-770122");
 
                     dialogBuilder.setView(dialog_view);
                     if (pay_type != null && pay_type.equals("bkash")) {
@@ -619,7 +619,7 @@ public class checkout extends AppCompatActivity implements AdapterView.OnItemCli
                 "'" + subTK + "','" + totalTK + "'," +
                 "'" + session + "','0')";
 
-        operation.invoice_proccess(context, sql1, sql2, progressDialog, id, subTK, disTK, String.valueOf(del_ch), grnT.getText().toString(),pay_type);
+        operation.invoice_proccess(context, sql1, sql2, progressDialog, id, subTK, disTK, String.valueOf(del_ch), grnT.getText().toString(),pay_type,district.getText().toString());
     }
 
     public void deliveryAdd(Context context, String sql, ProgressDialog progressDialog) {
@@ -638,7 +638,7 @@ public class checkout extends AppCompatActivity implements AdapterView.OnItemCli
                                 invoice_query(response, gid, context, progressDialog);
                             } else {
                                 progressDialog.dismiss();
-                                Toast.makeText(context, response, Toast.LENGTH_LONG).show();
+                                Toast.makeText(context, response, Toast.LENGTH_SHORT).show();
                             }
                         }
                     }, new Response.ErrorListener() {
@@ -646,7 +646,7 @@ public class checkout extends AppCompatActivity implements AdapterView.OnItemCli
                 @Override
                 public void onErrorResponse(VolleyError error) {
                     progressDialog.dismiss();
-                    Toast.makeText(context, error.toString(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, error.toString(), Toast.LENGTH_SHORT).show();
                 }
             }) {
                 @Override
@@ -838,13 +838,13 @@ public class checkout extends AppCompatActivity implements AdapterView.OnItemCli
                             if (!response.equals("1")) {
                                 showGuest(response);
                             } else
-                                Toast.makeText(checkout.this, response, Toast.LENGTH_LONG).show();
+                                Toast.makeText(checkout.this, response, Toast.LENGTH_SHORT).show();
                         }
                     }, new Response.ErrorListener() {
 
                 @Override
                 public void onErrorResponse(VolleyError error) {
-                    Toast.makeText(checkout.this, error.toString(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(checkout.this, error.toString(), Toast.LENGTH_SHORT).show();
                 }
             }) {
                 @Override
@@ -939,7 +939,7 @@ public class checkout extends AppCompatActivity implements AdapterView.OnItemCli
 
                 @Override
                 public void onErrorResponse(VolleyError error) {
-                    Toast.makeText(checkout.this, error.toString(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(checkout.this, error.toString(), Toast.LENGTH_SHORT).show();
                 }
             }) {
                 @Override
