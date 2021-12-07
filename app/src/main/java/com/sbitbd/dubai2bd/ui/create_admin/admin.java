@@ -28,7 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class admin extends AppCompatActivity {
-    private EditText first_n, phone, address, password, confirm_pass;
+    private EditText first_n, phone, address, password, confirm_pass,email;
     private Button reg;
     private operation operation;
     private DoConfig config = new DoConfig();
@@ -45,6 +45,7 @@ public class admin extends AppCompatActivity {
         address = findViewById(R.id.add_txt);
         password = findViewById(R.id.vp_ed);
         confirm_pass = findViewById(R.id.vc_ed);
+        email = findViewById(R.id.email);
         reg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -75,6 +76,11 @@ public class admin extends AppCompatActivity {
                 Toast.makeText(admin.this, "Phone number must be 11 character", Toast.LENGTH_SHORT).show();
                 return;
             }
+            if (email.getText().toString().trim().equals("")) {
+                email.setError("Empty Email");
+                Toast.makeText(admin.this, "Empty Email", Toast.LENGTH_SHORT).show();
+                return;
+            }
             if (password.getText().toString().equals("")) {
                 password.setError("Empty Password");
                 Toast.makeText(admin.this, "Empty Password", Toast.LENGTH_SHORT).show();
@@ -92,13 +98,14 @@ public class admin extends AppCompatActivity {
             }
             operation = new operation();
             check_phone_email(admin.this,first_n.getText().toString().trim(),phone.getText().toString().trim()
+                    ,email.getText().toString().trim()
                     ,password.getText().toString(),address.getText().toString().trim());
 
         } catch (Exception e) {
         }
     }
 
-    public void check_phone_email(Context context, String firstname, String phone,
+    public void check_phone_email(Context context, String firstname, String phone,String email,
                                   String password, String address) {
         progressDialog = ProgressDialog.show(admin.this, "", "Proccessing...", false, false);
         try {
@@ -108,10 +115,10 @@ public class admin extends AppCompatActivity {
                         @Override
                         public void onResponse(String response) {
                             if (!response.equals("")) {
-                                Toast.makeText(context, "Phone already taken", Toast.LENGTH_LONG).show();
+                                Toast.makeText(context, "Phone already taken", Toast.LENGTH_SHORT).show();
                                 progressDialog.dismiss();
                             } else {
-                                insertuserData(context, firstname, phone, password, address, progressDialog);
+                                insertuserData(context, firstname, phone,email, password, address, progressDialog);
                             }
                         }
                     }, new Response.ErrorListener() {
@@ -119,7 +126,7 @@ public class admin extends AppCompatActivity {
                 @Override
                 public void onErrorResponse(VolleyError error) {
                     progressDialog.dismiss();
-                    Toast.makeText(context, error.toString(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, error.toString(), Toast.LENGTH_SHORT).show();
                 }
             }) {
                 @Override
@@ -139,7 +146,7 @@ public class admin extends AppCompatActivity {
         }
     }
 
-    public void insertuserData(Context context, String firstname, String phone,
+    public void insertuserData(Context context, String firstname, String phone,String email,
                                String password, String address, ProgressDialog progressDialog) {
         try {
             homeViewModel = new HomeViewModel();
@@ -149,11 +156,11 @@ public class admin extends AppCompatActivity {
                         public void onResponse(String response) {
                             progressDialog.dismiss();
                             if (!response.equals("Could not Registered in online") && !response.equals("")) {
-                                homeViewModel.insertuser(context, firstname, phone, "", password, response);
-                                Toast.makeText(context, "Successful", Toast.LENGTH_LONG).show();
+                                homeViewModel.insertuser(context, firstname, phone, email, password, response);
+                                Toast.makeText(context, "Successful", Toast.LENGTH_SHORT).show();
                                 startActivity(new Intent(admin.this, MainActivity.class));
                             } else {
-                                Toast.makeText(context, "Failed to Sign up", Toast.LENGTH_LONG).show();
+                                Toast.makeText(context, "Failed to Sign up", Toast.LENGTH_SHORT).show();
                             }
                         }
                     }, new Response.ErrorListener() {
@@ -161,7 +168,7 @@ public class admin extends AppCompatActivity {
                 @Override
                 public void onErrorResponse(VolleyError error) {
                     progressDialog.dismiss();
-                    Toast.makeText(context, error.toString(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, error.toString(), Toast.LENGTH_SHORT).show();
                 }
             }) {
                 @Override
@@ -169,7 +176,7 @@ public class admin extends AppCompatActivity {
                     Map<String, String> params = new HashMap<String, String>();
                     params.put(config.FIRST_N, firstname);
                     params.put(config.LAST_N, "");
-                    params.put(config.EMAIL, "");
+                    params.put(config.EMAIL, email);
                     params.put(config.PHONE, phone);
                     params.put(config.ADDRESS, address);
                     params.put(config.PASS, password);

@@ -504,11 +504,15 @@ public class operation {
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
-                            String id = createInvoiceID(response);
-                            String query = sql + id + sql1;
+                            String id = createInvoiceID(response.trim());
+                            String query = sql + id + sql1,gid;
+                            gid = homeViewModel.getGuestID(context);
                             balance_add(context, "INSERT INTO `invoice_balance_sheet`(`invoice_id`, `customer_id`, " +
-                                    "`amount`, `payment`, `due`, `attempt`) VALUES ('" + id + "','" + homeViewModel.getGuestID(context) + "'" +
+                                    "`amount`, `payment`, `due`, `attempt`) VALUES ('" + id + "','" + gid + "'" +
                                     ",'" + totalT + "','0.00','" + totalT + "','0')","Balance unsuccessful");
+                            Log.d("dddd","INSERT INTO `invoice_balance_sheet`(`invoice_id`, `customer_id`, " +
+                                    "`amount`, `payment`, `due`, `attempt`) VALUES ('" + id + "','" + gid + "'" +
+                                    ",'" + totalT + "','0.00','" + totalT + "','0')");
                             addInvoice(context, query, progressDialog, couponid, subT, disT, delT, totalT, pay_type,id,city);
 
                         }
@@ -543,7 +547,7 @@ public class operation {
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
-                            if (!response.equals("1")) {
+                            if (!response.trim().equals("1")) {
                                 Toast.makeText(context, fmg, Toast.LENGTH_SHORT).show();
                             }
                         }
@@ -551,7 +555,7 @@ public class operation {
 
                 @Override
                 public void onErrorResponse(VolleyError error) {
-                    Toast.makeText(context, error.toString(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, error.toString(), Toast.LENGTH_SHORT).show();
                 }
             }) {
                 @Override
@@ -896,22 +900,20 @@ public class operation {
             if (invoice_date.equals(thisDate)) {
                 id++;
                 if (id <= 9) {
-                    return (prefix + "0000" + "" + id);
+                    return (prefix + "000" + "" + id);
 
                 } else if (id <= 99) {
-                    return (prefix + "000" + "" + id);
-                } else if (id <= 999) {
                     return (prefix + "00" + "" + id);
-                } else if (id <= 9999) {
+                } else if (id <= 999) {
                     return (prefix + "0" + "" + id);
-                } else if (id <= 99999) {
+                } else if (id <= 9999) {
                     return (prefix + "" + "" + id);
                 }
             } else {
-                return (prefix + "0000" + "" + "1");
+                return (prefix + "000" + "" + "1");
             }
         } catch (Exception e) {
-            return (prefix + "0000" + "" + "1");
+            return (prefix + "000" + "" + "1");
         }
         return null;
     }
