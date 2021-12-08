@@ -146,4 +146,9 @@
     <string name="sign_up_txt">Please Registration and enjoy your shopping</string>
     <string name="buy_earn"><![CDATA[BUY & EARN]]></string>
     <string name="online_payment">Online Payment</string>
+    <string name="payment_details">Payment Details</string>
+    <string name="_0_tk">0 TK</string>
+    <string name="paid">Paid:</string>
+    <string name="due">Due:</string>
+    <string name="make_payment">Make Payment</string>
 </resources>
