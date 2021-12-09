@@ -126,7 +126,19 @@ public class order_info extends AppCompatActivity {
             bkash_btn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    show_bkash_form();
+                    show_bkash_form("Merchant Account","01557-770122","");
+                }
+            });
+            nagad_btn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    show_bkash_form("Merchant Account","01817549090","");
+                }
+            });
+            rocket_btn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    show_bkash_form("Personal Account","01832-3065409","");
                 }
             });
         } catch (Exception e) {
@@ -200,7 +212,7 @@ public class order_info extends AppCompatActivity {
         }
     }
 
-    private void show_bkash_form() {
+    private void show_bkash_form(String type_t,String num_t,String sql) {
         try {
             final BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(order_info.this   , R.style.CustomBottomSheetDialog);
             bottomSheetDialog.setDismissWithAnimation(true);
@@ -208,6 +220,11 @@ public class order_info extends AppCompatActivity {
             Button submit = bottomSheetDialog.findViewById(R.id.submit_btn);
             EditText mobile = bottomSheetDialog.findViewById(R.id.mobile);
             EditText transaction = bottomSheetDialog.findViewById(R.id.trans);
+            TextView type,num;
+            type = bottomSheetDialog.findViewById(R.id.type);
+            num = bottomSheetDialog.findViewById(R.id.num);
+            type.setText(type_t);
+            num.setText(num_t);
 
             submit.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -228,28 +245,56 @@ public class order_info extends AppCompatActivity {
                         return;
                     }
                     withLottie = new BeautifulProgressDialog(order_info.this,
-                            BeautifulProgressDialog.withLottie,
-                            "Please wait");
+                            BeautifulProgressDialog.withLottie,null);
                     withLottie.setLottieLocation("json_lottie/loading.json");
                     withLottie.setLayoutColor(Color.WHITE);
                     withLottie.setLayoutRadius(10f);
                     withLottie.setLayoutElevation(5f);
                     withLottie.show();
 
-//                    String sql = "INSERT INTO `addfunds`(`date`, `member_id`, `customer_id`, `type`, " +
-//                            "`amount`, `withdraw`, `number`, `details`, `status`) VALUES(" +
-//                            "'" + config.getCreateDate() + "','" + homeViewModel.getSellerID(root1.getContext()
-//                            .getApplicationContext()) + "','" + homeViewModel.getGuestID(root1.getContext()
-//                            .getApplicationContext()) + "','" + type.getText().toString() + "','0.00" +
-//                            "','" + amount.getText().toString().trim() + "','" + account.getText().toString()
-//                            .trim() + "','" + det.getText().toString().trim() + "','0')";
+
 
                 }
             });
 
             bottomSheetDialog.show();
+        } catch (Exception e) {
+        }
+    }
+    private void update(String sql) {
 
-        } catch (Exception e) {e.printStackTrace();
+        try {
+            StringRequest stringRequest = new StringRequest(Request.Method.POST, config.INSERT,
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            if (!response.equals("1")) {
+                                showJson(response);
+                            } else {
+                                Toast.makeText(order_info.this, response, Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    }, new Response.ErrorListener() {
+
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Toast.makeText(order_info.this, error.toString(), Toast.LENGTH_LONG).show();
+                }
+            }) {
+                @Override
+                protected Map<String, String> getParams() {
+                    Map<String, String> params = new HashMap<String, String>();
+                    params.put(config.QUERY, sql);
+                    return params;
+                }
+            };
+            RequestQueue requestQueue = Volley.newRequestQueue(order_info.this);
+            stringRequest.setRetryPolicy(new DefaultRetryPolicy(
+                    10000,
+                    DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                    DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+            requestQueue.add(stringRequest);
+        } catch (Exception e) {
         }
     }
 }

@@ -154,4 +154,6 @@
     <string name="contact_with_09642887766">Contact with 09642887766</string>
     <string name="bkash_payment">bKash Payment</string>
     <string name="submit">Submit</string>
+    <string name="type">Type:</string>
+    <string name="number">Number:</string>
 </resources>
