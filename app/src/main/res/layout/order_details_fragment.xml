@@ -284,8 +284,7 @@ tools:context=".ui.track_order.order_info">
                 android:layout_marginTop="12dp"
                 android:layout_marginEnd="8dp"
                 android:layout_marginBottom="8dp"
-                app:cardCornerRadius="5dp"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:cardCornerRadius="10dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/make_pay"
@@ -354,7 +353,7 @@ tools:context=".ui.track_order.order_info">
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
-                app:cardCornerRadius="5dp"
+                app:cardCornerRadius="10dp"
                 app:cardElevation="0dp"
                 app:layout_constraintBottom_toTopOf="@+id/make_pay"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -475,9 +474,9 @@ tools:context=".ui.track_order.order_info">
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="10dp"
                 android:layout_marginEnd="8dp"
-                app:cardCornerRadius="5dp"
+                app:cardCornerRadius="10dp"
                 app:cardElevation="0dp"
                 app:layout_constraintBottom_toTopOf="@+id/address_card"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -485,6 +484,7 @@ tools:context=".ui.track_order.order_info">
                 app:layout_constraintTop_toBottomOf="@+id/amount_details"
                 app:strokeColor="@color/main_color_norm"
                 app:strokeWidth="1dp">
+
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
@@ -492,7 +492,7 @@ tools:context=".ui.track_order.order_info">
                     <View
                         android:id="@+id/view"
                         android:layout_width="match_parent"
-                        android:layout_height="30dp"
+                        android:layout_height="25dp"
                         android:background="@color/main_color_norm"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
@@ -501,15 +501,100 @@ tools:context=".ui.track_order.order_info">
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/poppins_medium"
+                        android:fontFamily="@font/poppins_semibold"
                         android:text="@string/make_payment"
                         android:textColor="@color/white"
+                        app:layout_constraintBottom_toBottomOf="@+id/view"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintBottom_toBottomOf="@+id/view"/>
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/online_btn"
+                        style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="3dp"
+                        android:maxLines="1"
+                        android:paddingVertical="10dp"
+                        android:text="@string/online_payment"
+                        app:backgroundTint="@color/main_color_norm"
+                        app:cornerRadius="10dp"
+                        app:layout_constraintEnd_toStartOf="@+id/bkash_btn"
+                        app:layout_constraintHorizontal_bias="0.5"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/view" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/bkash_btn"
+                        style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="3dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:maxLines="1"
+                        android:paddingVertical="10dp"
+                        android:text="@string/bkash"
+                        app:backgroundTint="@color/main_color_norm"
+                        app:cornerRadius="10dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.5"
+                        app:layout_constraintStart_toEndOf="@+id/online_btn"
+                        app:layout_constraintTop_toBottomOf="@+id/view" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/nagad_btn"
+                        style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginEnd="3dp"
+                        android:layout_marginBottom="7dp"
+                        android:maxLines="1"
+                        android:paddingVertical="10dp"
+                        android:text="@string/nagad"
+                        app:backgroundTint="@color/main_color_norm"
+                        app:cornerRadius="10dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/rocket_btn"
+                        app:layout_constraintHorizontal_bias="0.5"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/online_btn" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/rocket_btn"
+                        style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="3dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginBottom="7dp"
+                        android:maxLines="1"
+                        android:paddingVertical="10dp"
+                        android:text="@string/rocket"
+                        app:backgroundTint="@color/main_color_norm"
+                        app:cornerRadius="10dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.5"
+                        app:layout_constraintStart_toEndOf="@+id/nagad_btn"
+                        app:layout_constraintTop_toBottomOf="@+id/bkash_btn" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </com.google.android.material.card.MaterialCardView>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="12dp"
+                android:fontFamily="@font/poppins_light"
+                android:text="@string/contact_with_09642887766"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/address_card"
+                app:layout_constraintTop_toBottomOf="@+id/address_card" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 
