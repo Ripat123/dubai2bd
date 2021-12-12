@@ -5,8 +5,11 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ProgressDialog;
 import android.graphics.Color;
+import android.icu.text.SimpleDateFormat;
+import android.icu.util.TimeZone;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -22,14 +25,21 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.basusingh.beautifulprogressdialog.BeautifulProgressDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.datepicker.MaterialDatePicker;
+import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.sbitbd.dubai2bd.Config.DoConfig;
 import com.sbitbd.dubai2bd.R;
 import com.sbitbd.dubai2bd.ui.cart_operation.operation;
+import com.sbitbd.dubai2bd.ui.checkout.checkout;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class order_info extends AppCompatActivity {
@@ -40,6 +50,7 @@ public class order_info extends AppCompatActivity {
     private operation operation = new operation();
     private Button online_btn, bkash_btn, nagad_btn, rocket_btn;
     private BeautifulProgressDialog withLottie;
+    private int payment_check = 0;
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -48,6 +59,7 @@ public class order_info extends AppCompatActivity {
         setContentView(R.layout.order_details_fragment);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("Order Details");
+        getWindow().setStatusBarColor(getResources().getColor(R.color.main_color));
         initView();
     }
 
@@ -126,19 +138,22 @@ public class order_info extends AppCompatActivity {
             bkash_btn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    show_bkash_form("Merchant Account","01557-770122","","bKash Payment");
+                    payment_check = 1;
+                    show_bkash_form("Merchant Account", "01557-770122", "", "bKash");
                 }
             });
             nagad_btn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    show_bkash_form("Merchant Account","01817549090","","Nagad Payment");
+                    payment_check = 1;
+                    show_bkash_form("Merchant Account", "01817549090", "", "Nagad");
                 }
             });
             rocket_btn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    show_bkash_form("Personal Account","01832-3065409","","Rocket Payment");
+                    payment_check = 1;
+                    show_bkash_form("Personal Account", "01832-3065409", "", "Rocket");
                 }
             });
         } catch (Exception e) {
@@ -212,22 +227,51 @@ public class order_info extends AppCompatActivity {
         }
     }
 
-    private void show_bkash_form(String type_t,String num_t,String sql,String title) {
+    private void show_bkash_form(String type_t, String num_t, String sql, String title) {
         try {
-            final BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(order_info.this   , R.style.CustomBottomSheetDialog);
+            final BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(order_info.this, R.style.CustomBottomSheetDialog);
             bottomSheetDialog.setDismissWithAnimation(true);
             bottomSheetDialog.setContentView(R.layout.pay_layout);
             Button submit = bottomSheetDialog.findViewById(R.id.submit_btn);
             EditText mobile = bottomSheetDialog.findViewById(R.id.mobile);
             EditText transaction = bottomSheetDialog.findViewById(R.id.trans);
-            TextView type,num,title_t;
+            TextView type, num, title_t, date_id;
+            MaterialCardView date;
             type = bottomSheetDialog.findViewById(R.id.type);
+            date = bottomSheetDialog.findViewById(R.id.date);
             num = bottomSheetDialog.findViewById(R.id.num);
             title_t = bottomSheetDialog.findViewById(R.id.title);
+            date_id = bottomSheetDialog.findViewById(R.id.date_id);
             type.setText(type_t);
             num.setText(num_t);
-            title_t.setText(title);
+            title_t.setText(title + " Payment");
 
+            MaterialDatePicker.Builder<Long> materialDateBuilder = MaterialDatePicker.Builder.datePicker();
+            materialDateBuilder.setTitleText("SELECT A DATE");
+            materialDateBuilder.setTheme(R.style.RoundShapeCalenderTheme);
+
+            final MaterialDatePicker<Long> materialDatePicker = materialDateBuilder.build();
+
+            date.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    materialDatePicker.show(getSupportFragmentManager(), "MATERIAL_DATE_PICKER");
+                }
+            });
+            materialDatePicker.addOnPositiveButtonClickListener(new MaterialPickerOnPositiveButtonClickListener<Long>() {
+                @RequiresApi(api = Build.VERSION_CODES.N)
+                @Override
+                public void onPositiveButtonClick(Long selection) {
+                    TimeZone timeZoneUTC = TimeZone.getDefault();
+                    String date;
+                    // It will be negative, so that's the -1
+                    int offsetFromUTC = timeZoneUTC.getOffset(new Date().getTime()) * -1;
+                    SimpleDateFormat simpleFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+                    Date date1 = new Date(selection + offsetFromUTC);
+                    date = simpleFormat.format(date1);
+                    date_id.setText(date);
+                }
+            });
             submit.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -246,15 +290,23 @@ public class order_info extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(), "Empty Transaction ID", Toast.LENGTH_SHORT).show();
                         return;
                     }
+                    if (date_id.getText().toString().trim().equals("")) {
+                        date_id.setError("Empty Transaction ID");
+                        Toast.makeText(getApplicationContext(), "Empty Transaction ID", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
                     withLottie = new BeautifulProgressDialog(order_info.this,
-                            BeautifulProgressDialog.withLottie,null);
+                            BeautifulProgressDialog.withLottie, null);
                     withLottie.setLottieLocation("json_lottie/loading.json");
                     withLottie.setLayoutColor(Color.WHITE);
-                    withLottie.setLayoutRadius(10f);
+                    withLottie.setLayoutRadius(13f);
                     withLottie.setLayoutElevation(5f);
                     withLottie.show();
 
-
+                    update("UPDATE `invoices` SET payment_type = '" + title.toLowerCase() + "',mobile_acc" +
+                            "='" + mobile.getText().toString().trim() + "',trans_id = '" + transaction.getText()
+                            .toString().trim() + "',updated_at = current_timestamp WHERE invoice_id = '" + order_id.getText().toString().trim() + "'");
+                    bottomSheetDialog.dismiss();
 
                 }
             });
@@ -263,24 +315,40 @@ public class order_info extends AppCompatActivity {
         } catch (Exception e) {
         }
     }
-    private void update(String sql) {
 
+    private void update(String sql) {
         try {
             StringRequest stringRequest = new StringRequest(Request.Method.POST, config.INSERT,
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
-                            if (!response.equals("1")) {
-                                showJson(response);
+                            if (withLottie.isShowing())
+                                withLottie.dismiss();
+                            if (response.trim().equals("1")) {
+                                payment_check++;
+                                if (payment_check == 2){
+                                    View view = LayoutInflater.from(order_info.this).inflate(R.layout.success_lay, null);
+
+                                    MaterialAlertDialogBuilder dialogBuilder = new MaterialAlertDialogBuilder(order_info.this,R.style.RoundShapeTheme);
+//                                    dialogBuilder.setTitle("Sign In");
+                                    dialogBuilder.setCancelable(true);
+                                    dialogBuilder.setView(view);
+                                    dialogBuilder.setPositiveButton("OK", (dialog, which) -> {
+                                        dialog.dismiss();
+                                    });
+                                    dialogBuilder.show();
+                                }
                             } else {
-                                Toast.makeText(order_info.this, response, Toast.LENGTH_LONG).show();
+                                Toast.makeText(order_info.this, response, Toast.LENGTH_SHORT).show();
                             }
                         }
                     }, new Response.ErrorListener() {
 
                 @Override
                 public void onErrorResponse(VolleyError error) {
-                    Toast.makeText(order_info.this, error.toString(), Toast.LENGTH_LONG).show();
+                    if (withLottie.isShowing())
+                        withLottie.dismiss();
+                    Toast.makeText(order_info.this, error.toString(), Toast.LENGTH_SHORT).show();
                 }
             }) {
                 @Override

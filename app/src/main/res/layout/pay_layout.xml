@@ -90,7 +90,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@drawable/border_less_edit"
-            android:inputType="text"
+            android:inputType="phone"
             android:selectAllOnFocus="true" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -130,7 +130,7 @@
         android:layout_marginBottom="8dp"
         android:clickable="true"
         android:focusable="true"
-        android:foreground="@drawable/border_less_edit"
+        app:cardBackgroundColor="#66EAEAEA"
         app:cardCornerRadius="10dp"
         app:cardElevation="0dp"
         app:layout_constraintBottom_toTopOf="@+id/submit_btn"
@@ -168,7 +168,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:fontFamily="@font/poppins_medium"
-                android:text="@string/payment_date"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView13" />
@@ -193,5 +192,5 @@
         app:layout_constraintEnd_toEndOf="@+id/trans_lay"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="@+id/trans_lay"
-        app:layout_constraintTop_toBottomOf="@+id/trans_lay" />
+        app:layout_constraintTop_toBottomOf="@+id/date" />
 </androidx.constraintlayout.widget.ConstraintLayout>
