@@ -21,7 +21,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:fontFamily="@font/poppins_medium"
+        android:fontFamily="@font/poppins_light"
         android:text="@string/type"
         app:layout_constraintStart_toStartOf="@+id/fullname_lay"
         app:layout_constraintTop_toBottomOf="@+id/view" />
@@ -31,7 +31,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
-        android:fontFamily="@font/poppins_medium"
+        android:fontFamily="@font/poppins_light"
         app:layout_constraintStart_toEndOf="@+id/textView11"
         app:layout_constraintTop_toTopOf="@+id/textView11" />
 
@@ -40,7 +40,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
-        android:fontFamily="@font/poppins_medium"
+        android:fontFamily="@font/poppins_light"
         android:text="@string/number"
         app:layout_constraintStart_toStartOf="@+id/fullname_lay"
         app:layout_constraintTop_toBottomOf="@+id/textView11" />
@@ -50,11 +50,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
-        android:fontFamily="@font/poppins_medium"
+        android:fontFamily="@font/poppins_light"
         app:layout_constraintStart_toEndOf="@+id/textView12"
         app:layout_constraintTop_toTopOf="@+id/textView12" />
 
     <TextView
+        android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/poppins_semibold"
@@ -62,7 +63,7 @@
         android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/view"
         app:layout_constraintBottom_toBottomOf="@+id/view"/>
 
     <com.google.android.material.textfield.TextInputLayout

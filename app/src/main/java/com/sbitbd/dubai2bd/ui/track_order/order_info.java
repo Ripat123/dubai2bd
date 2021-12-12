@@ -126,19 +126,19 @@ public class order_info extends AppCompatActivity {
             bkash_btn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    show_bkash_form("Merchant Account","01557-770122","");
+                    show_bkash_form("Merchant Account","01557-770122","","bKash Payment");
                 }
             });
             nagad_btn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    show_bkash_form("Merchant Account","01817549090","");
+                    show_bkash_form("Merchant Account","01817549090","","Nagad Payment");
                 }
             });
             rocket_btn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    show_bkash_form("Personal Account","01832-3065409","");
+                    show_bkash_form("Personal Account","01832-3065409","","Rocket Payment");
                 }
             });
         } catch (Exception e) {
@@ -212,7 +212,7 @@ public class order_info extends AppCompatActivity {
         }
     }
 
-    private void show_bkash_form(String type_t,String num_t,String sql) {
+    private void show_bkash_form(String type_t,String num_t,String sql,String title) {
         try {
             final BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(order_info.this   , R.style.CustomBottomSheetDialog);
             bottomSheetDialog.setDismissWithAnimation(true);
@@ -220,11 +220,13 @@ public class order_info extends AppCompatActivity {
             Button submit = bottomSheetDialog.findViewById(R.id.submit_btn);
             EditText mobile = bottomSheetDialog.findViewById(R.id.mobile);
             EditText transaction = bottomSheetDialog.findViewById(R.id.trans);
-            TextView type,num;
+            TextView type,num,title_t;
             type = bottomSheetDialog.findViewById(R.id.type);
             num = bottomSheetDialog.findViewById(R.id.num);
+            title_t = bottomSheetDialog.findViewById(R.id.title);
             type.setText(type_t);
             num.setText(num_t);
+            title_t.setText(title);
 
             submit.setOnClickListener(new View.OnClickListener() {
                 @Override
