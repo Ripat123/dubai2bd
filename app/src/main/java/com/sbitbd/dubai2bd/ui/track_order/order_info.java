@@ -176,7 +176,7 @@ public class order_info extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     EditText editText = new EditText(order_info.this);
-                    editText.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL);
+                    editText.setInputType(InputType.TYPE_CLASS_NUMBER);
                     editText.setBackground(AppCompatResources.getDrawable(order_info.this,R.drawable.edittext));
                     MaterialAlertDialogBuilder dialogBuilder = new MaterialAlertDialogBuilder(order_info.this,R.style.RoundShapeTheme);
                     dialogBuilder.setTitle("Pay Amount");
