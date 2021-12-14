@@ -200,10 +200,6 @@ public class order_info extends AppCompatActivity {
         }
     }
 
-    public static int pxToDp(int px)
-    {
-        return (int) (px / Resources.getSystem().getDisplayMetrics().density);
-    }
 
     private void getData(String id) {
         String sql = "SELECT `invoices`.`created_at`+ INTERVAL 2 DAY AS 'invoice_id',`invoices`." +
@@ -574,7 +570,7 @@ public class order_info extends AppCompatActivity {
                                                 due = Double.parseDouble(due_t.getText().toString()) - Double.parseDouble(amount);
                                                 balance_add(order_info.this, "UPDATE `invoice_balance_sheet` SET " +
                                                         "`payment`= payment + '"+amount+"', `due`=" +
-                                                        "'" + due + "', `attempt`= attempt + 1 where invoice_id='" + order_id.getText().toString() + "'","failed balance entry");
+                                                        "'" + due + "', `attempt`= attempt + 1,updated_at= current_timestamp where invoice_id='" + order_id.getText().toString() + "'","failed balance entry");
 //                                                Invoice_json(response1, context, cuoponID, session, subT, disT, delT, totalT);
 
                                             }catch (Exception e){
