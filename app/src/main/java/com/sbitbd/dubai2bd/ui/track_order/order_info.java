@@ -2,13 +2,18 @@ package com.sbitbd.dubai2bd.ui.track_order;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.content.res.AppCompatResources;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.graphics.Color;
 import android.icu.text.SimpleDateFormat;
 import android.icu.util.TimeZone;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.InputType;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -16,6 +21,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.aamarpay.library.AamarPay;
+import com.aamarpay.library.DialogBuilder;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -33,14 +40,17 @@ import com.sbitbd.dubai2bd.Config.DoConfig;
 import com.sbitbd.dubai2bd.R;
 import com.sbitbd.dubai2bd.ui.cart_operation.operation;
 import com.sbitbd.dubai2bd.ui.checkout.checkout;
+import com.sbitbd.dubai2bd.ui.home.HomeViewModel;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.UUID;
 
 public class order_info extends AppCompatActivity {
 
@@ -51,8 +61,11 @@ public class order_info extends AppCompatActivity {
     private Button online_btn, bkash_btn, nagad_btn, rocket_btn;
     private BeautifulProgressDialog withLottie;
     private int payment_check = 0;
+    private AlertDialog alertDialog;
+    private AlertDialog.Builder builder;
+    private DialogBuilder dialogBuilder;
+    private HomeViewModel homeViewModel = new HomeViewModel();
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,7 +76,6 @@ public class order_info extends AppCompatActivity {
         initView();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void initView() {
         try {
             order_id = findViewById(R.id.order_id);
@@ -135,6 +147,7 @@ public class order_info extends AppCompatActivity {
                         break;
                 }
             }
+            getPay(order_id.getText().toString());
             bkash_btn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -156,6 +169,30 @@ public class order_info extends AppCompatActivity {
                     show_bkash_form("Personal Account", "01832-3065409", "", "Rocket");
                 }
             });
+            online_btn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    EditText editText = new EditText(order_info.this);
+                    editText.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL);
+                    editText.setBackground(AppCompatResources.getDrawable(order_info.this,R.drawable.edittext));
+                    MaterialAlertDialogBuilder dialogBuilder = new MaterialAlertDialogBuilder(order_info.this,R.style.RoundShapeTheme);
+                    dialogBuilder.setTitle("Pay Amount");
+                    dialogBuilder.setCancelable(false);
+                    dialogBuilder.setView(editText);
+                    dialogBuilder.setNegativeButton("NO",(dialog, which) -> {
+                        dialog.dismiss();
+                    });
+                    dialogBuilder.setPositiveButton("Yes",(dialog, which) -> {
+                        if (editText.getText().toString().equals("") || editText.getText().toString().equals("0")) {
+                            Toast.makeText(order_info.this, "Empty", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        sixdms(editText.getText().toString().trim());
+                    });
+                    dialogBuilder.show();
+                    editText.setText(total_t.getText().toString());
+                }
+            });
         } catch (Exception e) {
         }
     }
@@ -172,14 +209,51 @@ public class order_info extends AppCompatActivity {
                             if (!response.equals("1")) {
                                 showJson(response);
                             } else {
-                                Toast.makeText(order_info.this, response, Toast.LENGTH_LONG).show();
+                                Toast.makeText(order_info.this, response, Toast.LENGTH_SHORT).show();
                             }
                         }
                     }, new Response.ErrorListener() {
 
                 @Override
                 public void onErrorResponse(VolleyError error) {
-                    Toast.makeText(order_info.this, error.toString(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(order_info.this, error.toString(), Toast.LENGTH_SHORT).show();
+                }
+            }) {
+                @Override
+                protected Map<String, String> getParams() {
+                    Map<String, String> params = new HashMap<String, String>();
+                    params.put(config.QUERY, sql);
+                    return params;
+                }
+            };
+            RequestQueue requestQueue = Volley.newRequestQueue(order_info.this);
+            stringRequest.setRetryPolicy(new DefaultRetryPolicy(
+                    10000,
+                    DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                    DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+            requestQueue.add(stringRequest);
+        } catch (Exception e) {
+        }
+    }
+
+    private void getPay(String id) {
+        String sql = "SELECT payment as 'one',due as 'two' FROM invoice_balance_sheet WHERE invoice_id = '" + id + "'";
+        try {
+            StringRequest stringRequest = new StringRequest(Request.Method.POST, config.SIX_DMS,
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            if (!response.trim().equals("")) {
+                                show_pay(response.trim());
+                            } else {
+                                Toast.makeText(order_info.this, response, Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }, new Response.ErrorListener() {
+
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Toast.makeText(order_info.this, error.toString(), Toast.LENGTH_SHORT).show();
                 }
             }) {
                 @Override
@@ -221,7 +295,24 @@ public class order_info extends AppCompatActivity {
                 address = collegeData.getString(config.PRO_IMAGE);
                 del_date_t.setText(operation.reduce_date(sdate) + " and " + operation.reduce_date(edate));
                 or_amt.setText(price);
+                total_t.setText(price);
                 deli_add.setText(address);
+            }
+        } catch (Exception e) {
+        }
+    }
+    private void show_pay(String response) {
+        String one = "";
+        String two = "";
+        try {
+            JSONObject jsonObject = new JSONObject(response);
+            JSONArray result = jsonObject.getJSONArray(config.RESULT);
+            for (int i = 0; i <= result.length(); i++) {
+                JSONObject collegeData = result.getJSONObject(i);
+                one = collegeData.getString(config.ONE);
+                two = collegeData.getString(config.TWO);
+                paid_t.setText(one);
+                due_t.setText(two);
             }
         } catch (Exception e) {
         }
@@ -359,6 +450,242 @@ public class order_info extends AppCompatActivity {
                 }
             };
             RequestQueue requestQueue = Volley.newRequestQueue(order_info.this);
+            stringRequest.setRetryPolicy(new DefaultRetryPolicy(
+                    10000,
+                    DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                    DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+            requestQueue.add(stringRequest);
+        } catch (Exception e) {
+        }
+    }
+
+    private void sixdms(String amount) {
+        String sql = "SELECT invoices.invoice_id, delivery_infos.`first_name` as 'one', delivery_infos.`email` " +
+                "as 'two', delivery_infos.`address` as 'four', delivery_infos.`phone` as " +
+                "'three' FROM `invoices` inner join delivery_infos on invoices.delivery_id=delivery_infos" +
+                ".id where invoice_id = '"+order_id.getText().toString()+"'";
+
+        alertDialog = new ProgressDialog(order_info.this);
+        dialogBuilder = new DialogBuilder(order_info.this, alertDialog);
+
+        // Private Dialog
+        builder = new AlertDialog.Builder(order_info.this);
+        try {
+            StringRequest stringRequest = new StringRequest(Request.Method.POST, DoConfig.SIX_DMS,
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            if (!response.trim().equals("")) {
+//                                Toast.makeText(context, response, Toast.LENGTH_LONG).show();
+                                try {
+                                    String cus_name, cus_email, cus_phone, cus_add, cus_city, cus_country, trx_id;
+                                    JSONObject jsonObject = new JSONObject(response);
+                                    JSONArray result = jsonObject.getJSONArray(DoConfig.RESULT);
+                                    JSONObject collegeData = result.getJSONObject(0);
+                                    String bdt = "BDT";
+                                    cus_name = collegeData.getString(DoConfig.ONE);
+                                    cus_email = collegeData.getString(DoConfig.TWO);
+                                    cus_phone = collegeData.getString(DoConfig.THREE);
+                                    cus_add = collegeData.getString(DoConfig.FOUR);
+                                    cus_city = collegeData.getString(DoConfig.FIVE);
+                                    cus_country = collegeData.getString(DoConfig.SIX);
+
+                                    AamarPay aamarPay = new AamarPay(order_info.this, "aamarpay", "28c78bb1f45112f5d40b956fe104645a");
+                                    aamarPay.testMode(true);
+                                    aamarPay.autoGenerateTransactionID(false);
+//                                    Random rand = new Random();
+//                                    int maxNumber = 5;
+//                                    int randomNumber = rand.nextInt(maxNumber) + 1;
+                                    aamarPay.setTransactionID(UUID.randomUUID().toString() +"-"+order_id.getText().toString());
+//                                    trx_id = aamarPay.generate_trx_id();
+                                    aamarPay.setTransactionParameter(amount, bdt, "Customer payment");
+
+                                    aamarPay.setCustomerDetails(cus_name, cus_email, cus_phone, cus_add, deli_add.getText().toString(), "BD");
+//                                        Toast.makeText(context, trx_id, Toast.LENGTH_LONG).show();
+                                    aamarPay.initPGW(new AamarPay.onInitListener() {
+                                        @Override
+                                        public void onInitFailure(Boolean error, String message) {
+                                            try {
+                                                Log.d("TEST_IF", message);
+                                                dialogBuilder.dismissDialog();
+                                                dialogBuilder.errorPopUp(message);
+                                            } catch (Exception e) {
+                                                e.printStackTrace();
+                                            }
+
+                                        }
+
+                                        @Override
+                                        public void onPaymentSuccess(JSONObject jsonObject) {
+                                            try {
+                                                Log.d("TEST_PS", jsonObject.toString());
+                                                dialogBuilder.dismissDialog();
+                                                double due;
+                                                String mer_txnid,cus_name,cus_phone,cus_email,pg_service_charge_bdt,
+                                                        amount_original,pg_card_bank_name,
+                                                        card_number,currency_merchant,convertion_rate,ip_address,
+                                                        other_currency,pay_status,pg_txnid,currency,store_amount,pay_time,
+                                                        amount,bank_txn,card_type,pg_card_risklevel,pg_error_code_details;
+                                                mer_txnid = jsonObject.getString(DoConfig.MER_TXNID);
+                                                cus_name = jsonObject.getString(DoConfig.CUS_NAME);
+                                                cus_phone = jsonObject.getString(DoConfig.cus_phone);
+                                                cus_email = jsonObject.getString(DoConfig.cus_email);
+                                                pg_service_charge_bdt = jsonObject.getString(DoConfig.processing_charge);
+                                                amount_original = jsonObject.getString(DoConfig.amount);
+                                                pg_card_bank_name = jsonObject.getString(DoConfig.payment_processor);
+                                                card_number = jsonObject.getString(DoConfig.cardnumber);
+                                                currency_merchant = jsonObject.getString(DoConfig.currency_merchant);
+                                                convertion_rate = jsonObject.getString(DoConfig.convertion_rate);
+                                                ip_address = jsonObject.getString(DoConfig.ip);
+                                                other_currency = jsonObject.getString(DoConfig.other_amount);
+                                                pay_status = jsonObject.getString(DoConfig.pay_status);
+                                                pg_txnid = jsonObject.getString(DoConfig.pg_txnid);
+                                                currency = jsonObject.getString(DoConfig.currency);
+                                                store_amount = jsonObject.getString(DoConfig.rec_amount);
+                                                pay_time = jsonObject.getString(DoConfig.date_processed);
+                                                amount = jsonObject.getString(DoConfig.amount);
+                                                bank_txn = jsonObject.getString(DoConfig.bank_trxid);
+                                                card_type = jsonObject.getString(DoConfig.payment_type);
+                                                pg_card_risklevel = jsonObject.getString(DoConfig.risk_level);
+                                                pg_error_code_details = jsonObject.getString(DoConfig.error_code);
+                                                balance_add(order_info.this,"INSERT INTO `online_payment_details`" +
+                                                        "(`mer_txnid`, `customer_id`, `cus_name`, `cus_phone`, " +
+                                                        "`cus_email`, `pg_service_charge_bdt`, `amount_original`, " +
+                                                        " `pg_card_bank_name`, " +
+                                                        "`card_number`, `currency_merchant`, " +
+                                                        "`convertion_rate`, `ip_address`, `other_currency`, `pay_status`, " +
+                                                        "`pg_txnid`, `currency`, `store_amount`, `pay_time`, `amount`, " +
+                                                        "`bank_txn`, `card_type`, `pg_card_risklevel`, " +
+                                                        "`pg_error_code_details`, `session_id`) VALUES ('"+mer_txnid+"'," +
+                                                        "'"+homeViewModel.getGuestID(order_info.this)+"','"+cus_name+"','"+cus_phone+"'," +
+                                                        "'"+cus_email+"','"+pg_service_charge_bdt+"','"+amount_original+"'," +
+                                                        "'"+pg_card_bank_name+"','"+card_number+"','"+currency_merchant+"'," +
+                                                        "'"+convertion_rate+"','"+ip_address+"','"+other_currency+"','"+pay_status+"'," +
+                                                        "'"+pg_txnid+"','"+currency+"','"+store_amount+"','"+pay_time+"','"+amount+"'," +
+                                                        "'"+bank_txn+"','"+card_type+"','"+pg_card_risklevel+"','"+pg_error_code_details+"','"+homeViewModel.getSession(order_info.this)+"')","failed payment entry");
+                                                due = Double.parseDouble(due_t.getText().toString()) - Double.parseDouble(amount);
+                                                balance_add(order_info.this, "UPDATE `invoice_balance_sheet` SET " +
+                                                        "`payment`= payment + '"+amount+"', `due`=" +
+                                                        "'" + due + "', `attempt`= attempt + 1 where invoice_id='" + order_id.getText().toString() + "'","failed balance entry");
+//                                                Invoice_json(response1, context, cuoponID, session, subT, disT, delT, totalT);
+
+                                            }catch (Exception e){
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onPaymentFailure(JSONObject jsonObject) {
+                                            Log.d("TEST_PF", jsonObject.toString());
+                                            dialogBuilder.dismissDialog();
+
+                                            builder.setTitle("Payment Failed Response");
+                                            builder.setMessage(jsonObject.toString());
+
+                                            AlertDialog alertDialog1 = builder.create();
+                                            alertDialog1.show();
+                                        }
+
+                                        @Override
+                                        public void onPaymentProcessingFailed(JSONObject jsonObject) {
+                                            Log.d("TEST_PPF", jsonObject.toString());
+                                            dialogBuilder.dismissDialog();
+
+                                            builder.setTitle("Payment Processing Failed Response");
+                                            builder.setMessage(jsonObject.toString());
+
+                                            AlertDialog alertDialog1 = builder.create();
+                                            alertDialog1.show();
+                                        }
+
+                                        @Override
+                                        public void onPaymentCancel(JSONObject jsonObject) {
+                                            Log.d("TEST_PC", jsonObject.toString());
+                                            try {
+
+                                                // Call the transaction verification check validity
+                                                aamarPay.getTransactionInfo(jsonObject.getString("trx_id"), new AamarPay.TransactionInfoListener() {
+                                                    @Override
+                                                    public void onSuccess(JSONObject jsonObject) {
+                                                        Log.d("TEST_", jsonObject.toString());
+                                                        dialogBuilder.dismissDialog();
+//                                                        Invoice_json(response1, context, cuoponID, session, subT, disT, delT, totalT);
+                                                        builder.setTitle("Trx Verification Success Response");
+                                                        builder.setMessage(jsonObject.toString());
+
+                                                        AlertDialog alertDialog1 = builder.create();
+                                                        alertDialog1.show();
+                                                    }
+
+                                                    @Override
+                                                    public void onFailure(Boolean error, String message) {
+                                                        Log.d("TEST_", message);
+                                                        dialogBuilder.dismissDialog();
+                                                        dialogBuilder.errorPopUp(message);
+                                                    }
+                                                });
+                                            } catch (JSONException e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                    });
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+
+//
+                            } else {
+                                Toast.makeText(order_info.this, "No data", Toast.LENGTH_SHORT).show();
+                            }
+
+                        }
+                    }, new Response.ErrorListener() {
+
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Toast.makeText(order_info.this, error.toString(), Toast.LENGTH_SHORT).show();
+                }
+            }) {
+                @Override
+                protected Map<String, String> getParams() {
+                    Map<String, String> params = new HashMap<String, String>();
+                    params.put(DoConfig.QUERY, sql);
+                    return params;
+                }
+            };
+            RequestQueue requestQueue = Volley.newRequestQueue(order_info.this);
+            stringRequest.setRetryPolicy(new DefaultRetryPolicy(
+                    10000,
+                    DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                    DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+            requestQueue.add(stringRequest);
+        } catch (Exception e) {
+        }
+    }
+    private void balance_add(Context context, String sql,String fmg) {
+        try {
+            StringRequest stringRequest = new StringRequest(Request.Method.POST, DoConfig.INSERT,
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            if (!response.trim().equals("1")) {
+                                Toast.makeText(context, fmg, Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }, new Response.ErrorListener() {
+
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Toast.makeText(context, error.toString(), Toast.LENGTH_SHORT).show();
+                }
+            }) {
+                @Override
+                protected Map<String, String> getParams() {
+                    Map<String, String> params = new HashMap<String, String>();
+                    params.put(DoConfig.QUERY, sql);
+                    return params;
+                }
+            };
+            RequestQueue requestQueue = Volley.newRequestQueue(context);
             stringRequest.setRetryPolicy(new DefaultRetryPolicy(
                     10000,
                     DefaultRetryPolicy.DEFAULT_MAX_RETRIES,

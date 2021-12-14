@@ -785,9 +785,9 @@ public class operation {
                                                         "'"+pg_txnid+"','"+currency+"','"+store_amount+"','"+pay_time+"','"+amount+"'," +
                                                         "'"+bank_txn+"','"+card_type+"','"+pg_card_risklevel+"','"+pg_error_code_details+"','"+homeViewModel.getSession(context)+"')","failed payment entry");
                                                 due = Double.parseDouble(totalT) - Double.parseDouble(amount);
-                                                balance_add(context, "INSERT INTO `invoice_balance_sheet`(`invoice_id`, `customer_id`, " +
-                                                        "`amount`, `payment`, `due`, `attempt`) VALUES ('" + inv + "','" + homeViewModel.getGuestID(context) + "'" +
-                                                        ",'" + totalT + "','"+amount+"','" + due + "','1')","failed balance entry");
+                                                balance_add(context, "UPDATE `invoice_balance_sheet` SET " +
+                                                        "`amount` = '" + totalT + "',`payment`='"+amount+"', `due`=" +
+                                                        "'" + due + "', `attempt`='1' where invoice_id='" + inv + "'","failed balance entry");
                                                 Invoice_json(response1, context, cuoponID, session, subT, disT, delT, totalT);
                                                 progressDialog.dismiss();
                                             }catch (Exception e){
