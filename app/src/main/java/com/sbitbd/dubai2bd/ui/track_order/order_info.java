@@ -7,17 +7,20 @@ import androidx.appcompat.content.res.AppCompatResources;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.icu.text.SimpleDateFormat;
 import android.icu.util.TimeZone;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.InputType;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -174,6 +177,10 @@ public class order_info extends AppCompatActivity {
                 public void onClick(View v) {
                     EditText editText = new EditText(order_info.this);
                     editText.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL);
+                    editText.setPadding(pxToDp(8),pxToDp(0),pxToDp(8),pxToDp(0));
+                    LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                    lp.setMargins(pxToDp(10), pxToDp(5), pxToDp(10), pxToDp(5));
+                    editText.setLayoutParams(lp);
                     editText.setBackground(AppCompatResources.getDrawable(order_info.this,R.drawable.edittext));
                     MaterialAlertDialogBuilder dialogBuilder = new MaterialAlertDialogBuilder(order_info.this,R.style.RoundShapeTheme);
                     dialogBuilder.setTitle("Pay Amount");
@@ -195,6 +202,11 @@ public class order_info extends AppCompatActivity {
             });
         } catch (Exception e) {
         }
+    }
+
+    public static int pxToDp(int px)
+    {
+        return (int) (px / Resources.getSystem().getDisplayMetrics().density);
     }
 
     private void getData(String id) {
